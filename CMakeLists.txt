@@ -5,7 +5,7 @@ include(cmake/BuildType.cmake)
 ## life is about choices...
 #
 option(ONE4ALL_ENABLE_TESTS "Enable the unit tests ?" ON)
-option(ONE4ALL_ENABLE_BENCHMARKS "Enable benchmarks ?" OFF)
+option(ONE4ALL_ENABLE_BENCHMARKS "Enable benchmarks ?" ON)
 
 ## finally our project...
 #
