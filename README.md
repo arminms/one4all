@@ -1,9 +1,12 @@
 # one4all
 <!-- A framework to streamline developing for CUDA, ROCm and oneAPI at the same time. -->
 ## Building from source
-You need [CMake](https://cmake.org/) version 3.21 or higher.
+You need:
+- C++ compiler supporting the C++17 standard (e.g. `gcc` 9.3)
+- [CMake](https://cmake.org/) version 3.21 or higher.
 
-### Building parallel version
+
+### Building C++17 parallel algorithm version
 ```bash
 git clone https://github.com/arminms/one4all.git
 cd one4all
@@ -11,6 +14,7 @@ cmake -S . -B build
 cmake --build build -j
 ```
 ### Building CUDA version
+Requires CUDA version 11 or higher.
 ```bash
 git clone https://github.com/arminms/one4all.git
 cd one4all
@@ -18,6 +22,7 @@ cmake -S . -B build-cuda -DONE4ALL_TARGET_API=cuda
 cmake --build build-cuda -j
 ```
 ### Building ROCm version
+Only tested with ROCm 5.4.0.
 ```bash
 git clone https://github.com/arminms/one4all.git
 cd one4all
@@ -25,6 +30,7 @@ CXX=hipcc cmake -S . -B build-rocm -DONE4ALL_TARGET_API=rocm
 cmake --build build-rocm -j
 ```
 ### Building oneAPI version
+Only tested with oneAPI 2023.
 ```bash
 git clone https://github.com/arminms/one4all.git
 cd one4all
@@ -68,5 +74,9 @@ https://developer.codeplay.com/products/oneapi/amd/2023.0.0/guides/get-started-g
 ## Build on gra1339
 ```
 CXX=/opt/rocm-5.4.0/bin/hipcc cmake -S . -B build -DTBB_INCLUDE_DIR=~/.local/include -DTBB_LIBRARY=~/.local/lib
-``` -->
+```
 
+```
+strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
+```
+ -->
