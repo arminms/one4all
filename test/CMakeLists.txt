@@ -16,9 +16,13 @@ target_compile_options(unit_tests PRIVATE
   $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>
   $<$<STREQUAL:${ONE4ALL_TARGET_API},rocm>:-Wno-unused-result>
   $<$<STREQUAL:${ONE4ALL_TARGET_API},oneapi>:-fsycl-targets=${SYCL_TARGETS}>
+  $<$<BOOL:${SYCL_CUDA_ARCH}>:-Xsycl-target-backend=nvptx64-nvidia-cuda;--offload-arch=${SYCL_CUDA_ARCH}>
+  $<$<BOOL:${SYCL_ROCM_ARCH}>:-Xsycl-target-backend=amdgcn-amd-amdhsa;--offload-arch=${SYCL_ROCM_ARCH}>
 )
 target_link_options(unit_tests PRIVATE
   $<$<STREQUAL:${ONE4ALL_TARGET_API},oneapi>:-fsycl-targets=${SYCL_TARGETS}>
+  $<$<BOOL:${SYCL_CUDA_ARCH}>:-Xsycl-target-backend=nvptx64-nvidia-cuda;--offload-arch=${SYCL_CUDA_ARCH}>
+  $<$<BOOL:${SYCL_ROCM_ARCH}>:-Xsycl-target-backend=amdgcn-amd-amdhsa;--offload-arch=${SYCL_ROCM_ARCH}>
 )
 target_link_libraries(unit_tests PRIVATE
   Catch2::Catch2WithMain
