@@ -38,7 +38,7 @@
 #include <cfloat>
 #include <one4all/device.hpp>
 
-#if defined __CUDACC__
+#if defined(__CUDACC__)
 #include <math_constants.h>
 #endif
 
@@ -98,7 +98,7 @@ namespace trng {
       static constexpr bool is_specialized = ::std::numeric_limits<float>::is_specialized;
       ONE4ALL_DEVICE_CODE
       static constexpr float min() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
         return FLT_MIN;
 #else
         return ::std::numeric_limits<float>::min();
@@ -106,7 +106,7 @@ namespace trng {
       }
       ONE4ALL_DEVICE_CODE
       static constexpr float max() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
         return CUDART_MAX_NORMAL_F;
 #else
         return ::std::numeric_limits<float>::max();
@@ -120,7 +120,7 @@ namespace trng {
       static constexpr int radix = ::std::numeric_limits<float>::radix;
       ONE4ALL_DEVICE_CODE
       static constexpr float epsilon() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
         return FLT_EPSILON;
 #else
         return ::std::numeric_limits<float>::epsilon();
@@ -128,7 +128,7 @@ namespace trng {
       }
       ONE4ALL_DEVICE_CODE
       static constexpr float round_error() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
         return 0.5f;
 #else
         return ::std::numeric_limits<float>::round_error();
@@ -146,7 +146,7 @@ namespace trng {
       static constexpr bool has_denorm_loss = ::std::numeric_limits<float>::has_denorm_loss;
       ONE4ALL_DEVICE_CODE
       static constexpr float infinity() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
         return CUDART_INF_F;
 #else
         return ::std::numeric_limits<float>::infinity();
@@ -154,7 +154,7 @@ namespace trng {
       }
       ONE4ALL_DEVICE_CODE
       static constexpr float quiet_NaN() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
         return CUDART_NAN_F;
 #else
         return ::std::numeric_limits<float>::quiet_NaN();
@@ -162,7 +162,7 @@ namespace trng {
       }
       ONE4ALL_DEVICE_CODE
       static constexpr float signaling_NaN() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
         return CUDART_NAN_F;
 #else
         return ::std::numeric_limits<float>::signaling_NaN();
@@ -170,7 +170,7 @@ namespace trng {
       }
       ONE4ALL_DEVICE_CODE
       static constexpr float denorm_min() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
         return CUDART_MIN_DENORM_F;
 #else
         return ::std::numeric_limits<float>::denorm_min();
@@ -193,7 +193,7 @@ namespace trng {
       static constexpr bool is_specialized = ::std::numeric_limits<double>::is_specialized;
       ONE4ALL_DEVICE_CODE
       static constexpr double min() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
 #if __CUDA_ARCH__ >= 130
         return DBL_MIN;
 #else
@@ -205,7 +205,7 @@ namespace trng {
       }
       ONE4ALL_DEVICE_CODE
       static constexpr double max() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
 #if __CUDA_ARCH__ >= 130
         return DBL_MAX;
 #else
@@ -223,7 +223,7 @@ namespace trng {
       static constexpr int radix = ::std::numeric_limits<double>::radix;
       ONE4ALL_DEVICE_CODE
       static constexpr double epsilon() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
         return DBL_EPSILON;
 #else
         return ::std::numeric_limits<double>::epsilon();
@@ -231,7 +231,7 @@ namespace trng {
       }
       ONE4ALL_DEVICE_CODE
       static constexpr double round_error() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
         return 0.5;
 #else
         return ::std::numeric_limits<double>::round_error();
@@ -250,7 +250,7 @@ namespace trng {
       static constexpr bool has_denorm_loss = ::std::numeric_limits<double>::has_denorm_loss;
       ONE4ALL_DEVICE_CODE
       static constexpr double infinity() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
 #if __CUDA_ARCH__ >= 130
         return CUDART_INF;
 #else
@@ -262,7 +262,7 @@ namespace trng {
       }
       ONE4ALL_DEVICE_CODE
       static constexpr double quiet_NaN() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
 #if __CUDA_ARCH__ >= 130
         return CUDART_NAN;
 #else
@@ -274,7 +274,7 @@ namespace trng {
       }
       ONE4ALL_DEVICE_CODE
       static constexpr double signaling_NaN() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
 #if __CUDA_ARCH__ >= 130
         return CUDART_NAN;
 #else
@@ -286,7 +286,7 @@ namespace trng {
       }
       ONE4ALL_DEVICE_CODE
       static constexpr double denorm_min() noexcept {
-#if defined __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) && !defined(SYCL_LANGUAGE_VERSION)
 #if __CUDA_ARCH__ >= 130
         return CUDART_MIN_DENORM;
 #else
