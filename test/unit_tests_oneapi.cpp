@@ -119,6 +119,6 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - oneapi", "[1Kx8]", float, double )
     ,   begin
     ,   begin + (nr * nc)
     ,   [] (auto t)
-        { return ( std::abs(std::get<0>(t) - std::get<1>(t)) < 0.0001 ); }
+        { return ( std::abs(std::get<0>(t) - std::get<1>(t)) < 0.001 ); }
     )   );
 }

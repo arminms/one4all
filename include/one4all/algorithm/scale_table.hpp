@@ -68,8 +68,7 @@ inline void scale_table
 ,   T tmin
 ,   T tmax
 )
-{
-    sycl::queue q;
+{   sycl::queue q;
     q.submit
     (   [&](sycl::handler& h)
         {
@@ -99,6 +98,24 @@ inline void scale_table
             );
         }
     ).wait();
+
+    // auto min = range;
+    // auto max = range + nc;
+    // sycl::queue q;
+    // std::for_each
+    // (   ::oneapi::dpl::execution::make_device_policy(q)
+    // ,   ::oneapi::dpl::counting_iterator<RSizeT>(0)
+    // ,   ::oneapi::dpl::counting_iterator<RSizeT>(nr * nc)
+    // ,   [=] (RSizeT i)
+    //     {   CSizeT idx = i % nc;
+    //         *   ( out + i )
+    //         =   ( *(in + i) - *(min + idx) )
+    //         /   ( *(max + idx) - *(min + idx) )
+    //         *   ( tmax - tmin )
+    //         +   tmin
+    //         ;
+    //     }
+    // );
 }
 
 } // end one4all::oneapi namespace

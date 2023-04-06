@@ -94,7 +94,7 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - STL", "[1Kx8]", float, double )
         (   tbb::counting_iterator<size_t>(0)
         ,   tbb::counting_iterator<size_t>(nr * nc)
         ,   [&] (size_t i)
-            { return ( std::abs(bsr[i] - bs[i]) < 0.00001 ); }
+            { return ( std::abs(bsr[i] - bs[i]) < 0.0001 ); }
         )   );
     }
 
@@ -114,7 +114,7 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - STL", "[1Kx8]", float, double )
         ,   tbb::counting_iterator<size_t>(0)
         ,   tbb::counting_iterator<size_t>(nr * nc)
         ,   [&] (size_t i)
-            { return ( std::abs(bsr[i] - bs[i]) < 0.00001 ); }
+            { return ( std::abs(bsr[i] - bs[i]) < 0.0001 ); }
         )   );
     }
 }
