@@ -101,7 +101,7 @@ inline void scale_table
 
     // auto min = range;
     // auto max = range + nc;
-    // sycl::queue q;
+    // sycl::queue q; // or just use ::oneapi::dpl::execution::dpcpp_default
     // std::for_each
     // (   ::oneapi::dpl::execution::make_device_policy(q)
     // ,   ::oneapi::dpl::counting_iterator<RSizeT>(0)

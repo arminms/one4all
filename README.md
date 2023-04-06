@@ -77,6 +77,8 @@ CXX=/opt/rocm-5.4.0/bin/hipcc cmake -S . -B build -DTBB_INCLUDE_DIR=~/.local/inc
 ```
 
 ```
+. /opt/intel/oneapi/setvars.sh --force --include-intel-llvm
+. ~/intel/oneapi/setvars.sh --include-intel-llvm
 strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
 ```
  -->
