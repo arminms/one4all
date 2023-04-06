@@ -1,4 +1,4 @@
-name: CMakeBuild and Test
+name: Build and Test
 
 on:
   push:
