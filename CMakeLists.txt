@@ -16,6 +16,12 @@ project(
   LANGUAGES CXX
 )
 
+## prevent in-source builds
+#
+if (CMAKE_BINARY_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  message(FATAL_ERROR "Building in-source is not supported! Create a build dir and remove ${CMAKE_SOURCE_DIR}/CMakeCache.txt")
+endif()
+
 ## setting target API
 #
 set(ONE4ALL_TARGET_API "stl" CACHE
@@ -31,14 +37,14 @@ set_property(CACHE ONE4ALL_TARGET_API PROPERTY STRINGS
 #
 include(FetchContent)
 
-## prevent in-source builds
-#
-file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
-if(EXISTS "${LOC_PATH}")
-  message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
-endif()
 
+## for systems with main libraries in non-standard locations (e.g. Compute Canada)
+#
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH true)
+
+## make cache variables for install destinations
+#
+include(GNUInstallDirs)
 
 ## switch to the target API
 #
