@@ -11,7 +11,7 @@ option(ONE4ALL_ENABLE_BENCHMARKS "Enable benchmarks ?" ON)
 #
 project(
   one4all
-  VERSION 1.00
+  VERSION 1.1
   DESCRIPTION "A framework to streamline developing for CUDA, ROCm and oneAPI at the same time"
   LANGUAGES CXX
 )
@@ -36,7 +36,6 @@ set_property(CACHE ONE4ALL_TARGET_API PROPERTY STRINGS
 ## necessary modules
 #
 include(FetchContent)
-
 
 ## for systems with main libraries in non-standard locations (e.g. Compute Canada)
 #
@@ -83,6 +82,74 @@ else()
   message(FATAL_ERROR "Wrong ONE4ALL_TARGET_API: ${ONE4ALL_TARGET_API}")
 endif()
 
+## defining one4all target
+#
+add_library(${PROJECT_NAME} INTERFACE)
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+target_include_directories(${PROJECT_NAME} INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+## installing one4all header files
+#
+add_subdirectory(include)
+
+## defining one4all::cuda target
+#
+add_library(cuda INTERFACE)
+add_library(${PROJECT_NAME}::cuda ALIAS cuda)
+target_compile_options(cuda INTERFACE
+  $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>
+  $<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:CUDA>>:-G;-src-in-ptx>
+)
+target_link_libraries(cuda INTERFACE
+  ${PROJECT_NAME}::${PROJECT_NAME}
+)
+
+## defining one4all::oneapi target
+#
+add_library(oneapi INTERFACE)
+add_library(${PROJECT_NAME}::oneapi ALIAS oneapi)
+target_compile_options(oneapi INTERFACE
+  -fsycl-targets=${SYCL_TARGETS}
+  $<$<BOOL:${SYCL_CUDA_ARCH}>:-Xsycl-target-backend=nvptx64-nvidia-cuda;--offload-arch=${SYCL_CUDA_ARCH}>
+  $<$<BOOL:${SYCL_ROCM_ARCH}>:-Xsycl-target-backend=amdgcn-amd-amdhsa;--offload-arch=${SYCL_ROCM_ARCH}>
+)
+target_link_options(oneapi INTERFACE
+  -fsycl-targets=${SYCL_TARGETS}
+  $<$<BOOL:${SYCL_CUDA_ARCH}>:-Xsycl-target-backend=nvptx64-nvidia-cuda;--offload-arch=${SYCL_CUDA_ARCH}>
+  $<$<BOOL:${SYCL_ROCM_ARCH}>:-Xsycl-target-backend=amdgcn-amd-amdhsa;--offload-arch=${SYCL_ROCM_ARCH}>
+)
+target_link_libraries(oneapi INTERFACE
+  ${PROJECT_NAME}::${PROJECT_NAME}
+  oneDPL
+)
+
+## defining one4all::rocm target
+#
+add_library(rocm INTERFACE)
+add_library(${PROJECT_NAME}::rocm ALIAS rocm)
+target_compile_options(rocm INTERFACE -Wno-unused-result)
+target_link_libraries(rocm INTERFACE
+  ${PROJECT_NAME}::${PROJECT_NAME}
+  ${HIP_TARGET}
+  roc::rocthrust
+)
+
+## defining one4all::stl target
+#
+add_library(stl INTERFACE)
+add_library(${PROJECT_NAME}::stl ALIAS stl)
+target_link_libraries(stl INTERFACE
+  ${PROJECT_NAME}::${PROJECT_NAME}
+  OpenMP::OpenMP_CXX
+  TBB::tbb
+)
+
+## add unit tests
+#
 if(${ONE4ALL_ENABLE_TESTS})
   enable_testing()
   find_package(
@@ -103,6 +170,8 @@ if(${ONE4ALL_ENABLE_TESTS})
   add_subdirectory(test)
 endif()
 
+## add benchmarks
+#
 if(${ONE4ALL_ENABLE_BENCHMARKS})
   find_package(benchmark
     CONFIG
