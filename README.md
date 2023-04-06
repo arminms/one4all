@@ -1,4 +1,5 @@
 [![Build and Test](https://github.com/arminms/one4all/actions/workflows/cmake.yml/badge.svg)](https://github.com/arminms/one4all/actions/workflows/cmake.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # one4all
 <!-- A framework to streamline developing for CUDA, ROCm and oneAPI at the same time. -->
 ## Building from source
