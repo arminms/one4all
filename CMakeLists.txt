@@ -22,17 +22,6 @@ if (CMAKE_BINARY_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   message(FATAL_ERROR "Building in-source is not supported! Create a build dir and remove ${CMAKE_SOURCE_DIR}/CMakeCache.txt")
 endif()
 
-## setting target API
-#
-set(ONE4ALL_TARGET_API "stl" CACHE
-  STRING "Choose target API ?")
-set_property(CACHE ONE4ALL_TARGET_API PROPERTY STRINGS
-  "cuda"
-  "oneapi"
-  "rocm"
-  "stl"
-)
-
 ## necessary modules
 #
 include(FetchContent)
@@ -45,9 +34,29 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH true)
 #
 include(GNUInstallDirs)
 
+## setting target API
+#
+set(ONE4ALL_TARGET_API "stl" CACHE
+  STRING "Choose target API ?")
+set_property(CACHE ONE4ALL_TARGET_API PROPERTY STRINGS
+  "cuda"
+  "oneapi"
+  "rocm"
+  "stl"
+)
+
 ## switch to the target API
 #
-if(${ONE4ALL_TARGET_API} STREQUAL oneapi)
+if(${ONE4ALL_TARGET_API} STREQUAL cuda)
+  include(CheckLanguage)
+  check_language(CUDA)
+  if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
+    find_package(CUDAToolkit 11 REQUIRED)
+  else()
+    message(FATAL_ERROR "No CUDA support found")
+  endif()
+elseif(${ONE4ALL_TARGET_API} STREQUAL oneapi)
   if("${CMAKE_CXX_COMPILER}" MATCHES ".*clang\\+\\+")
     set(SYCL_TARGETS "nvptx64-nvidia-cuda,amdgcn-amd-amdhsa,spir64")
     set(SYCL_CUDA_ARCH "sm_50")
@@ -57,23 +66,23 @@ if(${ONE4ALL_TARGET_API} STREQUAL oneapi)
   endif()
   find_package(IntelDPCPP REQUIRED)
   find_package(oneDPL REQUIRED)
-elseif(${ONE4ALL_TARGET_API} STREQUAL cuda)
-  include(CheckLanguage)
-  check_language(CUDA)
-  if(CMAKE_CUDA_COMPILER)
-    enable_language(CUDA)
-    find_package(CUDAToolkit 11 REQUIRED)
-  endif()
 elseif(${ONE4ALL_TARGET_API} STREQUAL rocm)
-  list(APPEND CMAKE_PREFIX_PATH /opt/rocm/hip /opt/rocm)
-  find_package(hip REQUIRED)
-  set(HIP_TARGET  "hip::device" CACHE
-      STRING "Choose HIP target ?")
-  set_property(CACHE HIP_TARGET PROPERTY STRINGS
-    "hip::host"
-    "hip::device"
-  )
-  find_package(rocThrust REQUIRED)
+  include(CheckLanguage)
+  check_language(HIP)
+  if(CMAKE_HIP_COMPILER)
+    enable_language(HIP)
+    list(APPEND CMAKE_PREFIX_PATH /opt/rocm/hip /opt/rocm)
+    find_package(hip REQUIRED)
+    set(HIP_TARGET  "hip::device" CACHE
+        STRING "Choose HIP target ?")
+    set_property(CACHE HIP_TARGET PROPERTY STRINGS
+      "hip::host"
+      "hip::device"
+    )
+    find_package(rocThrust REQUIRED)
+  else()
+    message(FATAL_ERROR "No HIP support found")
+  endif()
 elseif(${ONE4ALL_TARGET_API} STREQUAL stl)
   find_package(OpenMP REQUIRED)
   list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
