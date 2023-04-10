@@ -67,19 +67,18 @@ elseif(${ONE4ALL_TARGET_API} STREQUAL oneapi)
   find_package(IntelDPCPP REQUIRED)
   find_package(oneDPL REQUIRED)
 elseif(${ONE4ALL_TARGET_API} STREQUAL rocm)
-  include(CheckLanguage)
   check_language(HIP)
   if(CMAKE_HIP_COMPILER)
     enable_language(HIP)
-    list(APPEND CMAKE_PREFIX_PATH /opt/rocm/hip /opt/rocm)
     find_package(hip REQUIRED)
-    set(HIP_TARGET  "hip::device" CACHE
-        STRING "Choose HIP target ?")
+    find_package(rocThrust REQUIRED)
+    set(HIP_TARGET "hip::device" CACHE
+        STRING "Choose HIP target ?"
+    )
     set_property(CACHE HIP_TARGET PROPERTY STRINGS
       "hip::host"
       "hip::device"
     )
-    find_package(rocThrust REQUIRED)
   else()
     message(FATAL_ERROR "No HIP support found")
   endif()
