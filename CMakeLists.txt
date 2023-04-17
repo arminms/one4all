@@ -11,7 +11,7 @@ option(ONE4ALL_ENABLE_BENCHMARKS "Enable benchmarks ?" ON)
 #
 project(
   one4all
-  VERSION 1.1
+  VERSION 1.2
   DESCRIPTION "A framework to streamline developing for CUDA, ROCm and oneAPI at the same time"
   LANGUAGES CXX
 )
@@ -58,15 +58,15 @@ if(${ONE4ALL_TARGET_API} STREQUAL cuda)
   endif()
 elseif(${ONE4ALL_TARGET_API} STREQUAL oneapi)
   if("${CMAKE_CXX_COMPILER}" MATCHES ".*clang\\+\\+")
-    set(SYCL_TARGETS "nvptx64-nvidia-cuda,amdgcn-amd-amdhsa,spir64")
-    set(SYCL_CUDA_ARCH "sm_50")
-    set(SYCL_ROCM_ARCH "gfx900")
+    set(SYCL_TARGETS "nvptx64-nvidia-cuda,amdgcn-amd-amdhsa,spir64" CACHE STRING "Choose SYCL targets?" FORCE)
+    set(SYCL_CUDA_ARCH "sm_50" CACHE STRING "Choose CUDA compute capability for SYCL?" FORCE)
+    set(SYCL_ROCM_ARCH "gfx90a" CACHE STRING "Choose SYCL target backend for AMD GPUs?" FORCE)
   else()
-    set(SYCL_TARGETS "spir64")
+    set(SYCL_TARGETS "spir64" CACHE STRING "Choose SYCL targets?" FORCE)
   endif()
-  find_package(IntelSYCL)
-  if(NOT IntelSYCL)
-    find_package(IntelDPCPP REQUIRED)
+  find_package(IntelSYCL QUIET)
+  if(NOT IntelSYCL_FOUND)
+    find_package(IntelDPCPP QUIET REQUIRED)
   endif()
   find_package(oneDPL REQUIRED)
 elseif(${ONE4ALL_TARGET_API} STREQUAL rocm)
@@ -124,11 +124,13 @@ target_link_libraries(cuda INTERFACE
 add_library(oneapi INTERFACE)
 add_library(${PROJECT_NAME}::oneapi ALIAS oneapi)
 target_compile_options(oneapi INTERFACE
+  -fsycl
   -fsycl-targets=${SYCL_TARGETS}
   $<$<BOOL:${SYCL_CUDA_ARCH}>:-Xsycl-target-backend=nvptx64-nvidia-cuda;--offload-arch=${SYCL_CUDA_ARCH}>
   $<$<BOOL:${SYCL_ROCM_ARCH}>:-Xsycl-target-backend=amdgcn-amd-amdhsa;--offload-arch=${SYCL_ROCM_ARCH}>
 )
 target_link_options(oneapi INTERFACE
+  -fsycl
   -fsycl-targets=${SYCL_TARGETS}
   $<$<BOOL:${SYCL_CUDA_ARCH}>:-Xsycl-target-backend=nvptx64-nvidia-cuda;--offload-arch=${SYCL_CUDA_ARCH}>
   $<$<BOOL:${SYCL_ROCM_ARCH}>:-Xsycl-target-backend=amdgcn-amd-amdhsa;--offload-arch=${SYCL_ROCM_ARCH}>
@@ -167,7 +169,7 @@ if(${ONE4ALL_ENABLE_TESTS})
     Catch2 3
     HINTS $ENV{HOME} /usr /usr/local /opt/local /opt
   )
-  if(NOT Catch2_DIR)
+  if(NOT Catch2_FOUND)
       message(STATUS "Fetching Catch2 library...")
       FetchContent_Declare(
         catch2
@@ -188,7 +190,7 @@ if(${ONE4ALL_ENABLE_BENCHMARKS})
     CONFIG
     HINTS $ENV{HOME} /usr/local /opt/local /opt
   )
-  if(NOT benchmark_DIR)
+  if(NOT benchmark_FOUND)
     message(STATUS "Fetching Google Benchmark library...")
     FetchContent_Declare(
       benchmark
