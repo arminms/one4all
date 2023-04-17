@@ -123,6 +123,7 @@ int main(int argc, char** argv)
        << "\n  Number of SMs: x" << prop.multiProcessorCount
        << "\n  Peak Memory Bandwidth: "
        << std::fixed << std::setprecision(0)
+       // based on https://developer.nvidia.com/blog/how-implement-performance-metrics-cuda-c
        << 2.0 * prop.memoryClockRate * (prop.memoryBusWidth / 8) / 1.0e6
        << " (GB/s)";
     benchmark::AddCustomContext("GPU", os.str());
