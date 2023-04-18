@@ -97,7 +97,7 @@ inline void scale_table
                 }
             );
         }
-    );
+    ).wait();
 
     // auto min = range;
     // auto max = range + nc;

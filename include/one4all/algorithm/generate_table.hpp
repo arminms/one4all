@@ -100,7 +100,7 @@ inline void generate_table
                 }
             );
         }
-    );
+    ).wait();
 }
 
 } // end one4all::oneapi namespace
