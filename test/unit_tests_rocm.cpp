@@ -23,13 +23,6 @@ struct equal
     {   return (std::abs(thrust::get<0>(t) - thrust::get<1>(t)) < 0.001);   }
 };
 
-struct equal_e_0_1
-{   template <typename Tuple>
-    __host__ __device__
-    bool operator()(Tuple t)
-    {   return (std::abs(thrust::get<0>(t) - thrust::get<1>(t)) < 0.1);   }
-};
-
 TEST_CASE( "Device Info - ROCm")
 {   hipDeviceProp_t prop;
     hipGetDeviceProperties(&prop, 0);

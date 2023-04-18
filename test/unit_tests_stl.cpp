@@ -73,6 +73,17 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - STL", "[1Kx8]", float, double )
     ,   seed_pi
     );
 
+    std::ofstream out("gt.txt");
+    for (size_t i = 0; i < nr * nc; ++i)
+    {
+        if (0 == i % nc)
+            out << std::endl;
+        out << std::fixed
+            << std::setw(9)
+            << std::setprecision(5)
+            << b[i];
+    }
+
     std::ifstream file(ONE4ALL_TEST_DATA_PATH"/scale_table_ref.txt");
     std::copy
     (   std::istream_iterator<T>(file)

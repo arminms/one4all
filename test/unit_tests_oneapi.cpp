@@ -58,17 +58,6 @@ TEMPLATE_TEST_CASE( "generate_table() x3 - oneAPI", "[oneAPI][10Kx3]", float, do
 
         sycl::host_accessor vbs{dvbs, sycl::read_only};
 
-        // std::ofstream out("vbs.txt");
-        // for (size_t i = 0; i < nr * nc; ++i)
-        // {
-        //     if (0 == i % nc)
-        //         out << std::endl;
-        //     out << std::fixed
-        //         << std::setw(10)
-        //         << std::setprecision(3)
-        //         << vbs[i];
-        // }
-
         CHECK( std::all_of(
             dpl::counting_iterator<size_t>(0)
         ,   dpl::counting_iterator<size_t>(nr * nc)
@@ -112,24 +101,6 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - oneapi", "[1Kx8]", float, double )
     ,   nc
     ,   T(-1.0), T(1.0)
     );
-
-    // sycl::host_accessor hbs{bs, sycl::read_only};
-    // std::ofstream out("bs.txt");
-    // for (size_t i = 0; i < nr * nc; ++i)
-    // {
-    //     if (0 == i % nc)
-    //         out << std::endl;
-    //     out << std::fixed
-    //         << std::setw(9)
-    //         << std::setprecision(5)
-    //         << hbs[i];
-    // }
-    // CHECK( std::all_of(
-    //     dpl::counting_iterator<size_t>(0)
-    // ,   dpl::counting_iterator<size_t>(nr * nc)
-    // ,   [&] (size_t i)
-    //     { return ( std::abs(bsr[i] - hbs[i]) < 0.0001 ); }
-    // ) );
 
     auto begin = dpl::make_zip_iterator(dpl::begin(dbsr), dpl::begin(bs));
     CHECK( std::all_of
