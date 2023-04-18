@@ -10,7 +10,7 @@ A framework to streamline developing for CUDA, ROCm and oneAPI at the same time.
     - STL Parallel Algorithms
 - All the configurations are automatically done by [CMake](https://cmake.org/)
 - Support unit testing with [Catch2](https://github.com/catchorg/Catch2)
-- Support Google Benchmark [Google Benchmark](https://github.com/google/benchmark)
+- Support [Google Benchmark](https://github.com/google/benchmark)
 - Two (kernel and Thrust/oneDPL) sample algorithms are already included
 
 ## Building from source
@@ -31,7 +31,7 @@ module load cmake googlebenchmark catch2
 
 ### Building C++17 parallel algorithm version
 Parallel STL requires a [TBB](https://github.com/oneapi-src/oneTBB) version between 2018 to 2020 to work.
-```bash
+```console
 git clone https://github.com/arminms/one4all.git
 cd one4all
 cmake -S . -B build
@@ -39,7 +39,7 @@ cmake --build build -j
 ```
 ### Building CUDA version
 Requires CUDA version 11 or higher.
-```bash
+```console
 git clone https://github.com/arminms/one4all.git
 cd one4all
 cmake -S . -B build-cuda -DONE4ALL_TARGET_API=cuda
@@ -47,7 +47,7 @@ cmake --build build-cuda -j
 ```
 ### Building ROCm version
 Requires ROCm 5.4.3 or higher.
-```bash
+```console
 git clone https://github.com/arminms/one4all.git
 cd one4all
 CXX=hipcc cmake -S . -B build-rocm -DONE4ALL_TARGET_API=rocm
@@ -56,27 +56,27 @@ cmake --build build-rocm -j
 ### Building oneAPI version
 Requires oneAPI 2023.0.0 or higher.
 #### Building for OpenCL targets
-```bash
+```console
 git clone https://github.com/arminms/one4all.git
 cd one4all
 CXX=icpx cmake -S . -B build-oneapi -DONE4ALL_TARGET_API=oneapi
 cmake --build build-oneapi -j
 ```
-#### Building for OpenCL, NVIDIA and AMD GPUs
-Requires [Codeplay](https://codeplay.com) plugins for [NVIDIA](https://developer.codeplay.com/products/oneapi/nvidia) and [AMD](https://developer.codeplay.com/products/oneapi/amd) GPUs installed.
-```bash
+#### Building for OpenCL, NVIDIA and/or AMD GPUs
+Requires [Codeplay](https://codeplay.com) plugins for [NVIDIA](https://developer.codeplay.com/products/oneapi/nvidia) and/or [AMD](https://developer.codeplay.com/products/oneapi/amd) GPUs installed.
+```console
 git clone https://github.com/arminms/one4all.git
 cd one4all
 CXX=clang++ cmake -S . -B build-oneapi -DONE4ALL_TARGET_API=oneapi
 cmake --build build-oneapi -j
 ```
 ## Running unit tests
-```bash
+```console
 cd build # or build-cuda / build-rocm / build-oneapi
 ctest
 ```
 To select target for oneAPI version, set `ONEAPI_DEVICE_SELECTOR` or `SYCL_DEVICE_FILTER` environment variable first:
-```bash
+```console
 # oneAPI 2023.1.0 or higher
 ONEAPI_DEVICE_SELECTOR=[level_zero|opencl|cuda|hip|esimd_emulator|*][:cpu|gpu|fpga|*]
 
@@ -89,7 +89,7 @@ ONEAPI_DEVICE_SELECTOR=cuda build-oneapi/test/unit_tests
 ```
 
 ## Running benchmarks
-```bash
+```console
 cd build  # or build-cuda / build-rocm / build-oneapi
 perf/benchmarks --benchmark_counters_tabular=true
 ```
