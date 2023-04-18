@@ -80,7 +80,7 @@ inline void scale_table
             sycl::buffer buf_out = out.get_buffer();
             sycl::accessor ra(buf_range, h , sycl::read_only);
             sycl::accessor ia(buf_in, h , sycl::read_only);
-            sycl::accessor oa(buf_out, h , sycl::write_only);
+            sycl::accessor oa(buf_out, h , sycl::write_only, sycl::no_init);
             h.parallel_for
             (   sycl::nd_range<1>(sycl::range<1>(blocks_per_grid * threads_per_block), sycl::range<1>(threads_per_block))
             ,   [=](sycl::nd_item<1> itm)
@@ -97,7 +97,7 @@ inline void scale_table
                 }
             );
         }
-    ).wait();
+    );
 
     // auto min = range;
     // auto max = range + nc;

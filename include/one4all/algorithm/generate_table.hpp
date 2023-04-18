@@ -74,7 +74,7 @@ inline void generate_table
             sycl::buffer buf_in = in.get_buffer();
             sycl::buffer buf_out = out.get_buffer();
             sycl::accessor ia(buf_in, h , sycl::read_only);
-            sycl::accessor oa(buf_out, h , sycl::write_only);
+            sycl::accessor oa(buf_out, h , sycl::write_only, sycl::no_init);
             h.parallel_for
             (   sycl::nd_range<1>
                 (   sycl::range<1>(blocks_per_grid * threads_per_block)
@@ -100,7 +100,7 @@ inline void generate_table
                 }
             );
         }
-    ).wait();
+    );
 }
 
 } // end one4all::oneapi namespace

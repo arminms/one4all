@@ -61,8 +61,8 @@ void scale_table_oneapi_x8(benchmark::State& st)
     sycl::buffer<T> b(nr * nc), bs{nr * nc}, dr(r);
 
     one4all::oneapi::generate_table<pcg32>
-    (   dpl::begin(dr, sycl::read_only)
-    ,   dpl::begin(b, sycl::write_only)
+    (   dpl::begin(dr)
+    ,   dpl::begin(b)
     ,   nr
     ,   nc
     ,   seed_pi
