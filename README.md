@@ -112,12 +112,11 @@ add_executable(my_prog
   my_prog_${<YOUR-PROJECT>_TARGET_API}.$<IF:$<STREQUAL:${<YOUR-PROJECT>_TARGET_API},cuda>,cu,cpp>
 )
 
-  ## defining link libraries for my_prog
-  #
-  target_link_libraries(my_prog PRIVATE
-    ${PROJECT_NAME}::${<YOUR-PROJECT>_TARGET_API}
-  )
-endif()
+## defining link libraries for my_prog
+#
+target_link_libraries(my_prog PRIVATE
+  ${PROJECT_NAME}::${<YOUR-PROJECT>_TARGET_API}
+)
 
 ## installing my_prog
 #
