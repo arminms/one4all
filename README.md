@@ -2,6 +2,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # one4all
 A framework to streamline developing for CUDA, ROCm and oneAPI at the same time.
+There is a recorded video about it on [SHARCNET YouTube Channel](https://sharcnet.ca):
+
+- [CUDA, ROCm, oneAPI – All for One or One for All?](https://youtu.be/RYtdiOhrv0Q)
+
 ## Features
 - Support four target APIs
     - CUDA
