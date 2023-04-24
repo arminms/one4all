@@ -21,15 +21,17 @@ TEST_CASE( "Device Info - oneAPI")
 TEMPLATE_TEST_CASE( "generate_table() x3 - oneAPI", "[oneAPI][10Kx3]", float, double )
 {   typedef TestType T;
     const auto nr{10'000}, nc{3};
-    std::vector<T> vrs(nr * nc);
+    sycl::queue q;
+    sycl::usm_allocator<T,sycl::usm::alloc::shared> alloc(q);
+    std::vector<T, decltype(alloc)> vrs(nr * nc, alloc);
     std::vector<T> r
     {   T(0), T( 1), T(  10)  // mins
     ,   T(1), T(10), T(1000)  // maxs
     };
 
     one4all::generate_table_rs<pcg32>
-    (   r.begin()
-    ,   vrs.begin()
+    (   std::begin(r)
+    ,   std::begin(vrs)
     ,   nr
     ,   nc
     ,   seed_pi
@@ -47,16 +49,15 @@ TEMPLATE_TEST_CASE( "generate_table() x3 - oneAPI", "[oneAPI][10Kx3]", float, do
 
     SECTION("block_splitting")
     {
-        sycl::buffer<T,1> dvr(r), dvbs{sycl::range(nr * nc)};
+        std::vector<T, decltype(alloc)> vbs(nr * nc, alloc), dr(nc * 2, alloc);
+        std::copy_n(std::begin(r), nc * 2, std::begin(dr));
         one4all::oneapi::generate_table<pcg32>
-        (   oneapi::dpl::begin(dvr)
-        ,   oneapi::dpl::begin(dvbs)
+        (   std::begin(dr)
+        ,   std::begin(vbs)
         ,   nr
         ,   nc
         ,   seed_pi
         );
-
-        sycl::host_accessor vbs{dvbs, sycl::read_only};
 
         CHECK( std::all_of(
             dpl::counting_iterator<size_t>(0)
@@ -70,21 +71,24 @@ TEMPLATE_TEST_CASE( "generate_table() x3 - oneAPI", "[oneAPI][10Kx3]", float, do
 TEMPLATE_TEST_CASE( "scale_table() x8 - oneapi", "[1Kx8]", float, double )
 {   typedef TestType T;
     const auto nr{1000}, nc{8};
+    sycl::queue q;
+    sycl::usm_allocator<T,sycl::usm::alloc::shared> alloc(q);
+    std::vector<T, decltype(alloc)> b(nr * nc, alloc), dr(nc * 2, alloc);
     std::vector<T> r
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
     };
-    sycl::buffer<T> b{nr * nc}, dr(r);
 
+    std::copy_n(std::begin(r), nc * 2, std::begin(dr));
     one4all::oneapi::generate_table<pcg32>
-    (   dpl::begin(dr)
-    ,   dpl::begin(b)
+    (   std::begin(dr)
+    ,   std::begin(b)
     ,   nr
     ,   nc
     ,   seed_pi
     );
 
-    std::vector<T> bsr(nr * nc);
+    std::vector<T, decltype(alloc)> bsr(nr * nc, alloc);
     std::ifstream file(ONE4ALL_TEST_DATA_PATH"/scale_table_ref.txt");
     std::copy
     (   std::istream_iterator<T>(file)
@@ -92,19 +96,19 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - oneapi", "[1Kx8]", float, double )
     ,   std::begin(bsr)
     );
 
-    sycl::buffer<T> bs{nr * nc}, dbsr(bsr);
+    std::vector<T, decltype(alloc)> bs(nr * nc, alloc);
     one4all::oneapi::scale_table
-    (   dpl::begin(dr, sycl::read_only, sycl::no_init)
-    ,   dpl::begin(b, sycl::read_only, sycl::no_init)
-    ,   dpl::begin(bs, sycl::write_only, sycl::no_init)
+    (   std::begin(dr)
+    ,   std::begin(b)
+    ,   std::begin(bs)
     ,   nr
     ,   nc
     ,   T(-1.0), T(1.0)
     );
 
-    auto begin = dpl::make_zip_iterator(dpl::begin(dbsr), dpl::begin(bs));
+    auto begin = dpl::make_zip_iterator(std::begin(bsr), std::begin(bs));
     CHECK( std::all_of
-    (   dpl::execution::dpcpp_default
+    (   oneapi::dpl::execution::make_device_policy(q)
     ,   begin
     ,   begin + (nr * nc)
     ,   [] (auto t)

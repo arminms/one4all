@@ -14,18 +14,22 @@ const unsigned long seed_pi{3141592654};
 
 template <class T>
 void generate_table_oneapi_x8(benchmark::State& st)
-{   size_t nr = size_t(st.range());
+{   typedef sycl::usm_allocator<T,sycl::usm::alloc::shared> sv_alloc;
+    size_t nr = size_t(st.range());
     size_t nc = 8;
+    sycl::queue q;
+    sv_alloc alloc(q);
     std::vector<T> r
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
     };
-    sycl::buffer<T,1> br(r), b{sycl::range(nr * nc)};
+    std::vector<T, sv_alloc> br(nc * 2, alloc), b(nr * nc, alloc);
+    std::copy_n(std::begin(r), nc * 2, std::begin(br));
 
     for (auto _ : st)
         one4all::oneapi::generate_table<pcg32>
-        (   oneapi::dpl::begin(br)
-        ,   oneapi::dpl::begin(b)
+        (   std::begin(br)
+        ,   std::begin(b)
         ,   nr
         ,   nc
         ,   seed_pi
@@ -52,17 +56,21 @@ BENCHMARK_TEMPLATE(generate_table_oneapi_x8, double)
 
 template <class T>
 void scale_table_oneapi_x8(benchmark::State& st)
-{   size_t nr = size_t(st.range());
+{   typedef sycl::usm_allocator<T,sycl::usm::alloc::shared> sv_alloc;
+    size_t nr = size_t(st.range());
     size_t nc = 8;
+    sycl::queue q;
+    sv_alloc alloc(q);
     std::vector<T> r
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
     };
-    sycl::buffer<T> b(nr * nc), bs{nr * nc}, dr(r);
+    std::vector<T, sv_alloc> b(nr * nc, alloc), bs(nr * nc, alloc), dr(nc * 2, alloc);
+    std::copy_n(std::begin(r), nc * 2, std::begin(dr));
 
     one4all::oneapi::generate_table<pcg32>
-    (   dpl::begin(dr)
-    ,   dpl::begin(b)
+    (   std::begin(dr)
+    ,   std::begin(b)
     ,   nr
     ,   nc
     ,   seed_pi
@@ -70,9 +78,9 @@ void scale_table_oneapi_x8(benchmark::State& st)
 
     for (auto _ : st)
     {   one4all::oneapi::scale_table
-        (   dpl::begin(dr, sycl::read_only)
-        ,   dpl::begin(b, sycl::read_only)
-        ,   dpl::begin(bs, sycl::write_only, sycl::no_init)
+        (   std::begin(dr)
+        ,   std::begin(b)
+        ,   std::begin(bs)
         ,   nr
         ,   nc
         ,   T(-1.0), T(1.0)

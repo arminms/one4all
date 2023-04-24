@@ -68,54 +68,55 @@ inline void scale_table
 ,   T tmin
 ,   T tmax
 )
-{   sycl::queue q;
-    q.submit
-    (   [&](sycl::handler& h)
-        {
-            const RSizeT threads_per_block{256};
-            const RSizeT blocks_per_grid{nr / threads_per_block + 1};
-            const RSizeT size{blocks_per_grid * threads_per_block};
-            sycl::buffer buf_range = range.get_buffer();
-            sycl::buffer buf_in = in.get_buffer();
-            sycl::buffer buf_out = out.get_buffer();
-            sycl::accessor ra(buf_range, h , sycl::read_only);
-            sycl::accessor ia(buf_in, h , sycl::read_only);
-            sycl::accessor oa(buf_out, h , sycl::write_only, sycl::no_init);
-            h.parallel_for
-            (   sycl::nd_range<1>(sycl::range<1>(blocks_per_grid * threads_per_block), sycl::range<1>(threads_per_block))
-            ,   [=](sycl::nd_item<1> itm)
-                {   auto idx{(itm.get_group(0) * itm.get_local_range(0) * nc) + (itm.get_local_id(0) * nc)};
-                    if (idx < nr * nc)
-                    {   for (CSizeT i = 0; i < nc; ++i)
-                        {   oa[idx + i]
-                            =   ( ia[idx + i] - ra[i] )
-                            /   ( ra[nc + i] - ra[i] )
-                            *   ( tmax - tmin )
-                            +   tmin;
-                        }
-                    }
-                }
-            );
-        }
-    ).wait();
-
-    // auto min = range;
-    // auto max = range + nc;
-    // sycl::queue q; // or just use ::oneapi::dpl::execution::dpcpp_default
-    // std::for_each
-    // (   ::oneapi::dpl::execution::make_device_policy(q)
-    // ,   ::oneapi::dpl::counting_iterator<RSizeT>(0)
-    // ,   ::oneapi::dpl::counting_iterator<RSizeT>(nr * nc)
-    // ,   [=] (RSizeT i)
-    //     {   CSizeT idx = i % nc;
-    //         *   ( out + i )
-    //         =   ( *(in + i) - *(min + idx) )
-    //         /   ( *(max + idx) - *(min + idx) )
-    //         *   ( tmax - tmin )
-    //         +   tmin
-    //         ;
+{
+    // sycl::queue q;
+    // q.submit
+    // (   [&](sycl::handler& h)
+    //     {
+    //         const RSizeT threads_per_block{256};
+    //         const RSizeT blocks_per_grid{nr / threads_per_block + 1};
+    //         const RSizeT size{blocks_per_grid * threads_per_block};
+    //         sycl::buffer buf_range = range.get_buffer();
+    //         sycl::buffer buf_in = in.get_buffer();
+    //         sycl::buffer buf_out = out.get_buffer();
+    //         sycl::accessor ra(buf_range, h , sycl::read_only);
+    //         sycl::accessor ia(buf_in, h , sycl::read_only);
+    //         sycl::accessor oa(buf_out, h , sycl::write_only, sycl::no_init);
+    //         h.parallel_for
+    //         (   sycl::nd_range<1>(sycl::range<1>(blocks_per_grid * threads_per_block), sycl::range<1>(threads_per_block))
+    //         ,   [=](sycl::nd_item<1> itm)
+    //             {   auto idx{(itm.get_group(0) * itm.get_local_range(0) * nc) + (itm.get_local_id(0) * nc)};
+    //                 if (idx < nr * nc)
+    //                 {   for (CSizeT i = 0; i < nc; ++i)
+    //                     {   oa[idx + i]
+    //                         =   ( ia[idx + i] - ra[i] )
+    //                         /   ( ra[nc + i] - ra[i] )
+    //                         *   ( tmax - tmin )
+    //                         +   tmin;
+    //                     }
+    //                 }
+    //             }
+    //         );
     //     }
-    // );
+    // ).wait();
+
+    auto min = range;
+    auto max = range + nc;
+    sycl::queue q; // or just use ::oneapi::dpl::execution::dpcpp_default
+    std::for_each
+    (   ::oneapi::dpl::execution::make_device_policy(q)
+    ,   ::oneapi::dpl::counting_iterator<RSizeT>(0)
+    ,   ::oneapi::dpl::counting_iterator<RSizeT>(nr * nc)
+    ,   [=] (RSizeT i)
+        {   CSizeT idx = i % nc;
+            *   ( out + i )
+            =   ( *(in + i) - *(min + idx) )
+            /   ( *(max + idx) - *(min + idx) )
+            *   ( tmax - tmin )
+            +   tmin
+            ;
+        }
+    );
 }
 
 } // end one4all::oneapi namespace

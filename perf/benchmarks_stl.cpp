@@ -72,6 +72,12 @@ BENCHMARK_TEMPLATE(generate_table_bs_x8, float)
 ->  UseRealTime()
 ->  Unit(benchmark::kMillisecond);
 
+BENCHMARK_TEMPLATE(generate_table_bs_x8, double)
+->  RangeMultiplier(2)
+->  Range(1<<20, 1<<24)
+->  UseRealTime()
+->  Unit(benchmark::kMillisecond);
+
 //----------------------------------------------------------------------------//
 // scale_table() algorithm
 
@@ -109,6 +115,10 @@ void scale_table_seq_x8(benchmark::State& st)
 }
 
 BENCHMARK_TEMPLATE(scale_table_seq_x8, float)
+->  RangeMultiplier(2)
+->  Range(1<<20, 1<<24)
+->  Unit(benchmark::kMillisecond);
+BENCHMARK_TEMPLATE(scale_table_seq_x8, double)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
 ->  Unit(benchmark::kMillisecond);
