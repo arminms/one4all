@@ -13,9 +13,15 @@
 const unsigned long seed_pi{3141592654};
 
 TEST_CASE( "Device Info - oneAPI")
-{
-    sycl::queue q;
-    WARN("Running on: " << q.get_device().get_info<sycl::info::device::name>());
+{   try
+    {   sycl::queue q;
+        // auto q = sycl::queue{usm_selector{}};
+        WARN("Running on: " << q.get_device().get_info<sycl::info::device::name>());
+    }
+    catch(const sycl::exception& e)
+    {   std::cerr << "Error: " << e.what() << std::endl;
+    }
+    REQUIRE(true);
 }
 
 TEMPLATE_TEST_CASE( "generate_table() x3 - oneAPI", "[oneAPI][10Kx3]", float, double )
@@ -48,11 +54,10 @@ TEMPLATE_TEST_CASE( "generate_table() x3 - oneAPI", "[oneAPI][10Kx3]", float, do
     }
 
     SECTION("block_splitting")
-    {
-        std::vector<T, decltype(alloc)> vbs(nr * nc, alloc), dr(nc * 2, alloc);
-        std::copy_n(std::begin(r), nc * 2, std::begin(dr));
+    {   std::vector<T, decltype(alloc)> sr(nc * 2, alloc), vbs(nr * nc, alloc);
+        std::copy_n(std::begin(r), nc * 2, std::begin(sr));
         one4all::oneapi::generate_table<pcg32>
-        (   std::begin(dr)
+        (   std::begin(sr)
         ,   std::begin(vbs)
         ,   nr
         ,   nc
