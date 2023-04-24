@@ -91,13 +91,44 @@ You can find the complete syntax [here](https://intel.github.io/llvm-docs/Enviro
 ```
 ONEAPI_DEVICE_SELECTOR=cuda build-oneapi/test/unit_tests
 ```
-
 ## Running benchmarks
 ```shell
 cd build  # or build-cuda / build-rocm / build-oneapi
 perf/benchmarks --benchmark_counters_tabular=true
 ```
 Selecting targets for oneAPI version is like unit tests described above.
+## Using *one4all* for new projects
+Select `fork` from top right. You may choose a different name for your repository. In that case, you can also search/replace `one4all` with `<your-project>` in all files (case-sensitive) and `ONE4ALL_TARGET_API` with `<YOUR-PROJECT>_TARGET_API` in all `CMakeLists.txt` files. Finally, rename `include/one4all` folder to `include/<your-project>`.
+
+You can add your new *algorithms* to `include/<your-project>/algorithm` 
+along with *unit tests* and *benchmarks* in the corresponding `test/unit_test/unit_tests_*.cpp` and `perf/benchmark/benchmarks_*.cpp` files, respectively.
+
+Later, if you decided to have a program, you can make a `src` folder and add the source code (e.g. `my_prog_*.cpp`) along with the following `CMakeLists.txt` into it:
+
+```cmake
+if(${<YOUR-PROJECT>_TARGET_API} STREQUAL stl)
+  ## defining target for my_prog
+  #
+  add_executable(my_prog
+    my_prog_${<YOUR-PROJECT>_TARGET_API}.$<IF:$<STREQUAL:${<YOUR-PROJECT>_TARGET_API},cuda>,cu,cpp>
+  )
+
+  ## defining link libraries for my_prog
+  #
+  target_link_libraries(my_prog PRIVATE
+    ${PROJECT_NAME}::${<YOUR-PROJECT>_TARGET_API}
+  )
+endif()
+
+## installing my_prog
+#
+install(TARGETS my_prog RUNTIME DESTINATION CMAKE_INSTALL_BINDIR)
+```
+
+Don't forget to replace `<YOUR-PROJECT>` with the name of your project in the above file.
+
+Finally, add `add_subdirectory(src)` at the end of the main [`CMakeLists.txt`](CMakeLists.txt) file.
+
 
 <!-- ## Install oneAPI
 ```
