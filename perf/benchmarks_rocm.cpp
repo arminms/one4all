@@ -20,24 +20,30 @@ template <class T>
 void generate_table_rocm_x8(benchmark::State& st)
 {   size_t nr = size_t(st.range());
     size_t nc = 8;
+    hipEvent_t start, stop;
+    hipEventCreate(&start); hipEventCreate(&stop);
     std::vector<T> r
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
     };
     thrust::device_vector<T> b(nr * nc), dr(r);
 
-    hipDeviceSynchronize();
-
     for (auto _ : st)
-    {   one4all::rocm::generate_table<pcg32>
+    {   hipEventRecord(start);
+        one4all::rocm::generate_table<pcg32>
         (   dr.begin()
         ,   b.begin()
         ,   nr
         ,   nc
         ,   seed_pi
         );
-        hipDeviceSynchronize();
+        hipEventRecord(stop);
+        hipEventSynchronize(stop);
+        float milliseconds = 0;
+        hipEventElapsedTime(&milliseconds, start, stop);
+        st.SetIterationTime(milliseconds * 0.001f);
     }
+    hipEventDestroy(start); hipEventDestroy(stop);
 
     st.counters["BW (GB/s)"] = benchmark::Counter
     (   (nr * nc * sizeof(T)) / 1e9
@@ -48,11 +54,13 @@ void generate_table_rocm_x8(benchmark::State& st)
 BENCHMARK_TEMPLATE(generate_table_rocm_x8, float)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
+->  UseManualTime()
 ->  Unit(benchmark::kMillisecond);
 
 BENCHMARK_TEMPLATE(generate_table_rocm_x8, double)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
+->  UseManualTime()
 ->  Unit(benchmark::kMillisecond);
 
 //----------------------------------------------------------------------------//
@@ -62,6 +70,8 @@ template <class T>
 void scale_table_rocm_x8(benchmark::State& st)
 {   size_t nr = size_t(st.range());
     size_t nc = 8;
+    hipEvent_t start, stop;
+    hipEventCreate(&start); hipEventCreate(&stop);
     std::vector<T> r
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
@@ -76,10 +86,9 @@ void scale_table_rocm_x8(benchmark::State& st)
     ,   seed_pi
     );
 
-    hipDeviceSynchronize();
-
     for (auto _ : st)
-    {   one4all::rocm::scale_table
+    {   hipEventRecord(start);
+        one4all::rocm::scale_table
         (   dr.begin()
         ,   b.begin()
         ,   bs.begin()
@@ -87,8 +96,13 @@ void scale_table_rocm_x8(benchmark::State& st)
         ,   nc
         ,   T(-1.0), T(1.0)
         );
-        hipDeviceSynchronize();
+        hipEventRecord(stop);
+        hipEventSynchronize(stop);
+        float milliseconds = 0;
+        hipEventElapsedTime(&milliseconds, start, stop);
+        st.SetIterationTime(milliseconds * 0.001f);
     }
+    hipEventDestroy(start); hipEventDestroy(stop);
 
     st.counters["BW (GB/s)"] = benchmark::Counter
     (   (nr * nc * sizeof(T) * 2) / 1e9
@@ -99,11 +113,13 @@ void scale_table_rocm_x8(benchmark::State& st)
 BENCHMARK_TEMPLATE(scale_table_rocm_x8, float)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
+->  UseManualTime()
 ->  Unit(benchmark::kMillisecond);
 
 BENCHMARK_TEMPLATE(scale_table_rocm_x8, double)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
+->  UseManualTime()
 ->  Unit(benchmark::kMillisecond);
 
 //----------------------------------------------------------------------------//
