@@ -42,6 +42,11 @@ BENCHMARK_TEMPLATE(generate_table_rs_seq_x8, float)
 ->  Range(1<<20, 1<<24)
 ->  Unit(benchmark::kMillisecond);
 
+BENCHMARK_TEMPLATE(generate_table_rs_seq_x8, double)
+->  RangeMultiplier(2)
+->  Range(1<<20, 1<<24)
+->  Unit(benchmark::kMillisecond);
+
 template <class T>
 void generate_table_bs_x8(benchmark::State& st)
 {   size_t nr = size_t(st.range());
@@ -67,6 +72,12 @@ void generate_table_bs_x8(benchmark::State& st)
 }
 
 BENCHMARK_TEMPLATE(generate_table_bs_x8, float)
+->  RangeMultiplier(2)
+->  Range(1<<20, 1<<24)
+->  UseRealTime()
+->  Unit(benchmark::kMillisecond);
+
+BENCHMARK_TEMPLATE(generate_table_bs_x8, double)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
 ->  UseRealTime()
@@ -113,6 +124,11 @@ BENCHMARK_TEMPLATE(scale_table_seq_x8, float)
 ->  Range(1<<20, 1<<24)
 ->  Unit(benchmark::kMillisecond);
 
+BENCHMARK_TEMPLATE(scale_table_seq_x8, double)
+->  RangeMultiplier(2)
+->  Range(1<<20, 1<<24)
+->  Unit(benchmark::kMillisecond);
+
 template <class T>
 void scale_table_par_x8(benchmark::State& st)
 {   size_t nr = size_t(st.range());
@@ -149,6 +165,12 @@ void scale_table_par_x8(benchmark::State& st)
 }
 
 BENCHMARK_TEMPLATE(scale_table_par_x8, float)
+->  RangeMultiplier(2)
+->  Range(1<<20, 1<<24)
+->  UseRealTime()
+->  Unit(benchmark::kMillisecond);
+
+BENCHMARK_TEMPLATE(scale_table_par_x8, double)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
 ->  UseRealTime()

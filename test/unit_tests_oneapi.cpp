@@ -13,23 +13,32 @@
 const unsigned long seed_pi{3141592654};
 
 TEST_CASE( "Device Info - oneAPI")
-{
-    sycl::queue q;
-    WARN("Running on: " << q.get_device().get_info<sycl::info::device::name>());
+{   try
+    {   sycl::queue q;
+        // auto q = sycl::queue{usm_selector{}};
+        WARN("Running on: " << q.get_device().get_info<sycl::info::device::name>());
+    }
+    catch(const sycl::exception& e)
+    {   std::cerr << "Error: " << e.what() << std::endl;
+    }
+    REQUIRE(true);
 }
 
 TEMPLATE_TEST_CASE( "generate_table() x3 - oneAPI", "[oneAPI][10Kx3]", float, double )
 {   typedef TestType T;
     const auto nr{10'000}, nc{3};
-    std::vector<T> vrs(nr * nc);
-    std::vector<T> r
+    sycl::queue q;
+    T* vrs = sycl::malloc_device<T>(nr * nc, q);
+    T* vbs = sycl::malloc_device<T>(nr * nc, q);
+    T* r = sycl::malloc_device<T>(nc * 2, q);
+    std::vector<T> vrsh(nr * nc), rh
     {   T(0), T( 1), T(  10)  // mins
     ,   T(1), T(10), T(1000)  // maxs
     };
 
     one4all::generate_table_rs<pcg32>
-    (   r.begin()
-    ,   vrs.begin()
+    (   std::begin(rh)
+    ,   std::begin(vrsh)
     ,   nr
     ,   nc
     ,   seed_pi
@@ -41,50 +50,55 @@ TEMPLATE_TEST_CASE( "generate_table() x3 - oneAPI", "[oneAPI][10Kx3]", float, do
         (   dpl::counting_iterator<size_t>(0)
         ,   dpl::counting_iterator<size_t>(nr * nc)
         ,   [&] (size_t i)
-            { return ( vrs[i] >= r[i % nc] && vrs[i] < r[ (i % nc) + nc] ); }
+            { return ( vrsh[i] >= rh[i % nc] && vrsh[i] < rh[ (i % nc) + nc] ); }
         ) );
     }
 
     SECTION("block_splitting")
-    {
-        sycl::buffer<T,1> dvr(r), dvbs{sycl::range(nr * nc)};
+    {   q.memcpy(r, rh.data(), nc * 2 * sizeof(T));
         one4all::oneapi::generate_table<pcg32>
-        (   oneapi::dpl::begin(dvr)
-        ,   oneapi::dpl::begin(dvbs)
+        (   r
+        ,   vbs
         ,   nr
         ,   nc
         ,   seed_pi
         );
-
-        sycl::host_accessor vbs{dvbs, sycl::read_only};
+        q.memcpy(vrs, vrsh.data(), nr * nc * sizeof(T));
 
         CHECK( std::all_of(
-            dpl::counting_iterator<size_t>(0)
+            oneapi::dpl::execution::make_device_policy(q)
+        ,   dpl::counting_iterator<size_t>(0)
         ,   dpl::counting_iterator<size_t>(nr * nc)
-        ,   [&] (size_t i)
+        ,   [=] (size_t i)
             { return ( std::abs(vrs[i] - vbs[i]) < 0.0001 ); }
         ) );
     }
+
+    sycl::free(r, q); sycl::free(vrs, q); sycl::free(vbs, q);
 }
 
 TEMPLATE_TEST_CASE( "scale_table() x8 - oneapi", "[1Kx8]", float, double )
 {   typedef TestType T;
     const auto nr{1000}, nc{8};
-    std::vector<T> r
+    sycl::queue q;
+    T* b = sycl::malloc_device<T>(nr * nc, q);
+    T* r = sycl::malloc_device<T>(nc * 2, q);
+    std::vector<T> rh
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
     };
-    sycl::buffer<T> b{nr * nc}, dr(r);
 
+    q.memcpy(r, rh.data(), nc * 2 * sizeof(T));
     one4all::oneapi::generate_table<pcg32>
-    (   dpl::begin(dr)
-    ,   dpl::begin(b)
+    (   r
+    ,   b
     ,   nr
     ,   nc
     ,   seed_pi
     );
 
-    std::vector<T> bsr(nr * nc);
+    sycl::usm_allocator<T,sycl::usm::alloc::shared> alloc(q);
+    std::vector<T, decltype(alloc)> bsr(nr * nc, alloc);
     std::ifstream file(ONE4ALL_TEST_DATA_PATH"/scale_table_ref.txt");
     std::copy
     (   std::istream_iterator<T>(file)
@@ -92,22 +106,24 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - oneapi", "[1Kx8]", float, double )
     ,   std::begin(bsr)
     );
 
-    sycl::buffer<T> bs{nr * nc}, dbsr(bsr);
+    T* bs = sycl::malloc_device<T>(nr * nc, q);
     one4all::oneapi::scale_table
-    (   dpl::begin(dr, sycl::read_only, sycl::no_init)
-    ,   dpl::begin(b, sycl::read_only, sycl::no_init)
-    ,   dpl::begin(bs, sycl::write_only, sycl::no_init)
+    (   r
+    ,   b
+    ,   bs
     ,   nr
     ,   nc
     ,   T(-1.0), T(1.0)
     );
 
-    auto begin = dpl::make_zip_iterator(dpl::begin(dbsr), dpl::begin(bs));
+    auto begin = dpl::make_zip_iterator(std::begin(bsr), bs);
     CHECK( std::all_of
-    (   dpl::execution::dpcpp_default
+    (   oneapi::dpl::execution::make_device_policy(q)
     ,   begin
     ,   begin + (nr * nc)
     ,   [] (auto t)
         { return ( std::abs(std::get<0>(t) - std::get<1>(t)) < 0.001 ); }
     )   );
+
+    sycl::free(r, q); sycl::free(b, q); sycl::free(bs, q);
 }
