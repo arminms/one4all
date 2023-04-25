@@ -74,18 +74,18 @@ elseif(${ONE4ALL_TARGET_API} STREQUAL rocm)
   check_language(HIP)
   if(CMAKE_HIP_COMPILER)
     enable_language(HIP)
-    find_package(hip REQUIRED)
-    find_package(rocThrust REQUIRED)
-    set(HIP_TARGET "hip::device" CACHE
-        STRING "Choose HIP target ?"
-    )
-    set_property(CACHE HIP_TARGET PROPERTY STRINGS
-      "hip::host"
-      "hip::device"
-    )
   else()
-    message(FATAL_ERROR "No HIP support found")
+    list(APPEND CMAKE_PREFIX_PATH /opt/rocm/hip /opt/rocm)
   endif()
+  find_package(hip REQUIRED)
+  find_package(rocThrust REQUIRED)
+  set(HIP_TARGET "hip::device" CACHE
+      STRING "Choose HIP target ?"
+  )
+  set_property(CACHE HIP_TARGET PROPERTY STRINGS
+    "hip::host"
+    "hip::device"
+  )
 elseif(${ONE4ALL_TARGET_API} STREQUAL stl)
   find_package(OpenMP REQUIRED)
   list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
