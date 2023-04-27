@@ -55,17 +55,16 @@ template
 ,   typename CSizeT
 ,   typename SeedT = unsigned long
 >
-inline void generate_table
+inline auto generate_table
 (   InputT in
 ,   OutputT out
 ,   RSizeT nr
 ,   CSizeT nc
 ,   SeedT s = 0
-)
+,   sycl::queue q = sycl::queue()
+)-> sycl::event
 {   typedef typename std::iterator_traits<OutputT>::value_type T;
-
-    sycl::queue q;
-    q.submit
+    auto event = q.submit
     (   [&](sycl::handler& h)
         {
             const RSizeT threads_per_block{256};
@@ -96,7 +95,8 @@ inline void generate_table
                 }
             );
         }
-    ).wait();
+    );
+    return event;
 }
 
 } // end one4all::oneapi namespace

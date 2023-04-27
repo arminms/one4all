@@ -62,7 +62,8 @@ TEMPLATE_TEST_CASE( "generate_table() x3 - oneAPI", "[oneAPI][10Kx3]", float, do
         ,   nr
         ,   nc
         ,   seed_pi
-        );
+        ,   q
+        ).wait();
         q.memcpy(vrs, vrsh.data(), nr * nc * sizeof(T));
 
         CHECK( std::all_of(
@@ -95,7 +96,7 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - oneapi", "[1Kx8]", float, double )
     ,   nr
     ,   nc
     ,   seed_pi
-    );
+    ).wait();
 
     sycl::usm_allocator<T,sycl::usm::alloc::shared> alloc(q);
     std::vector<T, decltype(alloc)> bsr(nr * nc, alloc);
@@ -114,7 +115,8 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - oneapi", "[1Kx8]", float, double )
     ,   nr
     ,   nc
     ,   T(-1.0), T(1.0)
-    );
+    ,   q
+    ).wait();
 
     auto begin = dpl::make_zip_iterator(std::begin(bsr), bs);
     CHECK( std::all_of

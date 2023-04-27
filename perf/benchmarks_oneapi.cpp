@@ -16,24 +16,34 @@ template <class T>
 void generate_table_oneapi_x8(benchmark::State& st)
 {   size_t nr = size_t(st.range());
     size_t nc = 8;
-    sycl::queue q;
+    // enabling SYCL queue profiling
+    auto pl = sycl::property_list{sycl::property::queue::enable_profiling()};
+    sycl::queue q = sycl::queue(pl);
     T* b = sycl::malloc_device<T>(nr * nc, q);
     T* r = sycl::malloc_device<T>(nc * 2, q);
     std::vector<T> rh
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
     };
-    q.memcpy(r, rh.data(), nc * 2 * sizeof(T));
+    q.memcpy(r, rh.data(), nc * 2 * sizeof(T)).wait();
 
     for (auto _ : st)
-        one4all::oneapi::generate_table<pcg32>
+    {
+        auto event = one4all::oneapi::generate_table<pcg32>
         (   r
         ,   b
         ,   nr
         ,   nc
         ,   seed_pi
+        ,   q
         );
-
+        event.wait();
+        auto start_time = event.template
+            get_profiling_info<sycl::info::event_profiling::command_start>();
+        auto end_time = event.template
+            get_profiling_info<sycl::info::event_profiling::command_end>();
+        st.SetIterationTime((end_time - start_time) * 1e-9f);
+    }
     sycl::free(r, q); sycl::free(b, q);
 
     st.counters["BW (GB/s)"] = benchmark::Counter
@@ -45,11 +55,13 @@ void generate_table_oneapi_x8(benchmark::State& st)
 BENCHMARK_TEMPLATE(generate_table_oneapi_x8, float)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
+->  UseManualTime()
 ->  Unit(benchmark::kMillisecond);
 
 BENCHMARK_TEMPLATE(generate_table_oneapi_x8, double)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
+->  UseManualTime()
 ->  Unit(benchmark::kMillisecond);
 
 //----------------------------------------------------------------------------//
@@ -59,7 +71,9 @@ template <class T>
 void scale_table_oneapi_x8(benchmark::State& st)
 {   size_t nr = size_t(st.range());
     size_t nc = 8;
-    sycl::queue q;
+    // enabling SYCL queue profiling
+    auto pl = sycl::property_list{sycl::property::queue::enable_profiling()};
+    sycl::queue q = sycl::queue(pl);
     std::vector<T> rh
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
@@ -67,7 +81,7 @@ void scale_table_oneapi_x8(benchmark::State& st)
     T* r = sycl::malloc_device<T>(nc * 2, q);
     T* b = sycl::malloc_device<T>(nr * nc, q);
     T* bs = sycl::malloc_device<T>(nr * nc, q);
-    q.memcpy(r, rh.data(), nc * 2 * sizeof(T));
+    q.memcpy(r, rh.data(), nc * 2 * sizeof(T)).wait();
 
     one4all::oneapi::generate_table<pcg32>
     (   r
@@ -75,17 +89,25 @@ void scale_table_oneapi_x8(benchmark::State& st)
     ,   nr
     ,   nc
     ,   seed_pi
-    );
+    ,   q
+    ).wait();
 
     for (auto _ : st)
-    {   one4all::oneapi::scale_table
+    {   auto event = one4all::oneapi::scale_table
         (   r
         ,   b
         ,   bs
         ,   nr
         ,   nc
         ,   T(-1.0), T(1.0)
+        ,   q
         );
+        event.wait();
+        auto start_time = event.template
+            get_profiling_info<sycl::info::event_profiling::command_start>();
+        auto end_time = event.template
+            get_profiling_info<sycl::info::event_profiling::command_end>();
+        st.SetIterationTime((end_time - start_time) * 1e-9f);
     }
 
     sycl::free(r, q); sycl::free(b, q); sycl::free(bs, q);
@@ -99,11 +121,13 @@ void scale_table_oneapi_x8(benchmark::State& st)
 BENCHMARK_TEMPLATE(scale_table_oneapi_x8, float)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
+->  UseManualTime()
 ->  Unit(benchmark::kMillisecond);
 
 BENCHMARK_TEMPLATE(scale_table_oneapi_x8, double)
 ->  RangeMultiplier(2)
 ->  Range(1<<20, 1<<24)
+->  UseManualTime()
 ->  Unit(benchmark::kMillisecond);
 
 //----------------------------------------------------------------------------//
