@@ -71,22 +71,29 @@ inline auto scale_table
 )-> sycl::event
 {   auto event = q.submit
     (   [&](sycl::handler& h)
-        {
+        {   auto min = range;
+            auto max = range + nc;
             const RSizeT threads_per_block{256};
-            const RSizeT blocks_per_grid{nr / threads_per_block + 1};
-            const RSizeT size{blocks_per_grid * threads_per_block};
+            const RSizeT blocks_per_grid{nr * nc / threads_per_block + 1};
+            const RSizeT job_size{blocks_per_grid * threads_per_block};
             h.parallel_for
-            (   sycl::nd_range<1>(sycl::range<1>(blocks_per_grid * threads_per_block), sycl::range<1>(threads_per_block))
-            ,   [=](sycl::nd_item<1> itm)
-                {   auto idx{(itm.get_group(0) * itm.get_local_range(0) * nc) + (itm.get_local_id(0) * nc)};
+            (   sycl::nd_range<1>
+                (   sycl::range<1>(job_size)
+                ,   sycl::range<1>(threads_per_block)
+                )
+            ,   [=](sycl::nd_item<1> item)
+                {   auto idx
+                    {   item.get_group(0)
+                    *   item.get_local_range(0)
+                    +   item.get_local_id(0)
+                    };
                     if (idx < nr * nc)
-                    {   for (CSizeT i = 0; i < nc; ++i)
-                        {   out [idx + i]
-                            =   ( in[idx + i] - range[i] )
-                            /   ( range[nc + i] - range[i] )
-                            *   ( tmax - tmin )
-                            +   tmin;
-                        }
+                    {   CSizeT i = idx % nc;
+                        out [idx]
+                        =   ( in[idx] - min[i] )
+                        /   ( max[i] - min[i] )
+                        *   ( tmax - tmin )
+                        +   tmin;
                     }
                 }
             );
@@ -94,6 +101,11 @@ inline auto scale_table
     );
     return event;
 
+    // // Currently, there's no way to obtain an event necessary for SYCL queue
+    // // profiling using oneDPL. That's why the following code is commented. If
+    // // there's no need to benchmark, you can uncomment this and comment out 
+    // // the above.
+    // // 
     // auto min = range;
     // auto max = range + nc;
     // sycl::queue q; // or just use ::oneapi::dpl::execution::dpcpp_default

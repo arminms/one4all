@@ -79,11 +79,10 @@ inline auto generate_table
                 {
                     RngT r(s);
                     auto idx
-                    {(  itm.get_group(0)
+                    {   itm.get_group(0)
                     *   itm.get_local_range(0)
-                    *   nc )
-                    +(  itm.get_local_id(0)
-                    *   nc )
+                    *   nc
+                    +   (itm.get_local_id(0) * nc)
                     };
                     if (idx < nr * nc)
                     {   r.discard(idx);
