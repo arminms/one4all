@@ -71,11 +71,15 @@ inline auto scale_table
 )-> sycl::event
 {   auto event = q.submit
     (   [&](sycl::handler& h)
-        {   auto min = range;
-            auto max = range + nc;
-            const RSizeT threads_per_block{256};
+        {   const RSizeT threads_per_block{256};
             const RSizeT blocks_per_grid{nr * nc / threads_per_block + 1};
             const RSizeT job_size{blocks_per_grid * threads_per_block};
+            sycl::buffer buf_range = range.get_buffer();
+            sycl::buffer buf_in = in.get_buffer();
+            sycl::buffer buf_out = out.get_buffer();
+            sycl::accessor ra(buf_range, h , sycl::read_only);
+            sycl::accessor ia(buf_in, h , sycl::read_only);
+            sycl::accessor oa(buf_out, h , sycl::write_only);
             h.parallel_for
             (   sycl::nd_range<1>
                 (   sycl::range<1>(job_size)
@@ -89,9 +93,9 @@ inline auto scale_table
                     };
                     if (idx < nr * nc)
                     {   CSizeT i = idx % nc;
-                        out [idx]
-                        =   ( in[idx] - min[i] )
-                        /   ( max[i] - min[i] )
+                        oa  [idx]
+                        =   ( ia[idx] - ra[i] )
+                        /   ( ra[i + nc] - ra[i] )
                         *   ( tmax - tmin )
                         +   tmin;
                     }
