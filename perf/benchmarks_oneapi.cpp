@@ -19,19 +19,17 @@ void generate_table_oneapi_x8(benchmark::State& st)
     // enabling SYCL queue profiling
     auto pl = sycl::property_list{sycl::property::queue::enable_profiling()};
     sycl::queue q = sycl::queue(pl);
-    T* b = sycl::malloc_device<T>(nr * nc, q);
-    T* r = sycl::malloc_device<T>(nc * 2, q);
-    std::vector<T> rh
+    std::vector<T> r
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
     };
-    q.memcpy(r, rh.data(), nc * 2 * sizeof(T)).wait();
+    sycl::buffer<T> br(r), b{sycl::range(nr * nc)};
 
     for (auto _ : st)
     {
         auto event = one4all::oneapi::generate_table<pcg32>
-        (   r
-        ,   b
+        (   dpl::begin(br)
+        ,   dpl::begin(b)
         ,   nr
         ,   nc
         ,   seed_pi
@@ -44,7 +42,6 @@ void generate_table_oneapi_x8(benchmark::State& st)
             get_profiling_info<sycl::info::event_profiling::command_end>();
         st.SetIterationTime((end_time - start_time) * 1e-9f);
     }
-    sycl::free(r, q); sycl::free(b, q);
 
     st.counters["BW (GB/s)"] = benchmark::Counter
     (   (nr * nc * sizeof(T)) / 1e9
@@ -74,18 +71,15 @@ void scale_table_oneapi_x8(benchmark::State& st)
     // enabling SYCL queue profiling
     auto pl = sycl::property_list{sycl::property::queue::enable_profiling()};
     sycl::queue q = sycl::queue(pl);
-    std::vector<T> rh
+    std::vector<T> r
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
     };
-    T* r = sycl::malloc_device<T>(nc * 2, q);
-    T* b = sycl::malloc_device<T>(nr * nc, q);
-    T* bs = sycl::malloc_device<T>(nr * nc, q);
-    q.memcpy(r, rh.data(), nc * 2 * sizeof(T)).wait();
+    sycl::buffer<T> b(nr * nc), bs(nr * nc), dr(r);
 
     one4all::oneapi::generate_table<pcg32>
-    (   r
-    ,   b
+    (   dpl::begin(dr)
+    ,   dpl::begin(b)
     ,   nr
     ,   nc
     ,   seed_pi
@@ -94,9 +88,9 @@ void scale_table_oneapi_x8(benchmark::State& st)
 
     for (auto _ : st)
     {   auto event = one4all::oneapi::scale_table
-        (   r
-        ,   b
-        ,   bs
+        (   dpl::begin(dr)
+        ,   dpl::begin(b)
+        ,   dpl::begin(bs)
         ,   nr
         ,   nc
         ,   T(-1.0), T(1.0)
@@ -109,8 +103,6 @@ void scale_table_oneapi_x8(benchmark::State& st)
             get_profiling_info<sycl::info::event_profiling::command_end>();
         st.SetIterationTime((end_time - start_time) * 1e-9f);
     }
-
-    sycl::free(r, q); sycl::free(b, q); sycl::free(bs, q);
 
     st.counters["BW (GB/s)"] = benchmark::Counter
     (   (nr * nc * sizeof(T) * 2) / 1e9
