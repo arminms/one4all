@@ -1,0 +1,36 @@
+2023-04-29T14:54:13+00:00
+Running build-oneapi/perf/benchmarks
+Run on (48 X 3612.31 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x48)
+  L1 Instruction 32 KiB (x48)
+  L2 Unified 512 KiB (x48)
+  L3 Unified 32768 KiB (x8)
+Load Average: 6.48, 7.99, 8.77
+oneAPI: 
+  Running on: NVIDIA A100-SXM4-40GB
+  Clock frequency: 1410
+  Compute units: 108
+-----------------------------------------------------------------------------------------------------------
+Benchmark                                                      Time             CPU   Iterations  BW (GB/s)
+-----------------------------------------------------------------------------------------------------------
+generate_table_oneapi_x8<float>/1048576/manual_time        0.139 ms        0.161 ms         4487  240.632/s
+generate_table_oneapi_x8<float>/2097152/manual_time        0.269 ms        0.291 ms         2597  249.193/s
+generate_table_oneapi_x8<float>/4194304/manual_time        0.530 ms        0.551 ms         1324  253.432/s
+generate_table_oneapi_x8<float>/8388608/manual_time         1.05 ms         1.08 ms          664  254.601/s
+generate_table_oneapi_x8<float>/16777216/manual_time        2.12 ms         2.13 ms          330   253.53/s
+generate_table_oneapi_x8<double>/1048576/manual_time       0.203 ms        0.226 ms         3437   329.83/s
+generate_table_oneapi_x8<double>/2097152/manual_time       0.399 ms        0.422 ms         1747  336.088/s
+generate_table_oneapi_x8<double>/4194304/manual_time       0.800 ms        0.822 ms          873  335.389/s
+generate_table_oneapi_x8<double>/8388608/manual_time        1.62 ms         1.64 ms          431  330.645/s
+generate_table_oneapi_x8<double>/16777216/manual_time       3.31 ms         3.33 ms          212  324.385/s
+scale_table_oneapi_x8<float>/1048576/manual_time           0.059 ms        0.083 ms        11783 1.13095k/s
+scale_table_oneapi_x8<float>/2097152/manual_time           0.112 ms        0.135 ms         6258 1.20217k/s
+scale_table_oneapi_x8<float>/4194304/manual_time           0.217 ms        0.240 ms         3226 1.23749k/s
+scale_table_oneapi_x8<float>/8388608/manual_time           0.427 ms        0.450 ms         1640  1.2577k/s
+scale_table_oneapi_x8<float>/16777216/manual_time          0.845 ms        0.867 ms          820 1.27067k/s
+scale_table_oneapi_x8<double>/1048576/manual_time          0.104 ms        0.128 ms         6715 1.29228k/s
+scale_table_oneapi_x8<double>/2097152/manual_time          0.201 ms        0.225 ms         3482 1.33428k/s
+scale_table_oneapi_x8<double>/4194304/manual_time          0.395 ms        0.418 ms         1770 1.35815k/s
+scale_table_oneapi_x8<double>/8388608/manual_time          0.784 ms        0.806 ms          881 1.37033k/s
+scale_table_oneapi_x8<double>/16777216/manual_time          1.56 ms         1.58 ms          442 1.37502k/s

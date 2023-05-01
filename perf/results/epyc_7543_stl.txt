@@ -1,0 +1,52 @@
+2023-05-01T10:20:49-04:00
+Running build/perf/benchmarks
+Run on (128 X 2794.72 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x64)
+  L1 Instruction 32 KiB (x64)
+  L2 Unified 512 KiB (x64)
+  L3 Unified 32768 KiB (x16)
+Load Average: 0.38, 0.19, 0.11
+-----------------------------------------------------------------------------------------------------
+Benchmark                                                Time             CPU   Iterations  BW (GB/s)
+-----------------------------------------------------------------------------------------------------
+generate_table_rs_seq_x8<float>/1048576               9.07 ms         9.07 ms           77   3.7007/s
+generate_table_rs_seq_x8<float>/2097152               18.2 ms         18.2 ms           38  3.69223/s
+generate_table_rs_seq_x8<float>/4194304               36.4 ms         36.4 ms           19  3.68676/s
+generate_table_rs_seq_x8<float>/8388608               72.9 ms         72.9 ms           10  3.68116/s
+generate_table_rs_seq_x8<float>/16777216               146 ms          146 ms            5  3.68314/s
+generate_table_rs_seq_x8<double>/1048576              9.19 ms         9.19 ms           76  7.30192/s
+generate_table_rs_seq_x8<double>/2097152              18.4 ms         18.4 ms           38  7.31056/s
+generate_table_rs_seq_x8<double>/4194304              36.7 ms         36.7 ms           19  7.30738/s
+generate_table_rs_seq_x8<double>/8388608              73.5 ms         73.5 ms            9  7.30676/s
+generate_table_rs_seq_x8<double>/16777216              147 ms          147 ms            5  7.30493/s
+generate_table_bs_x8<float>/1048576/real_time        0.331 ms        0.331 ms         2100  101.382/s
+generate_table_bs_x8<float>/2097152/real_time        0.589 ms        0.589 ms         1140   113.95/s
+generate_table_bs_x8<float>/4194304/real_time         1.09 ms         1.09 ms          644  122.817/s
+generate_table_bs_x8<float>/8388608/real_time         2.11 ms         2.11 ms          327    127.2/s
+generate_table_bs_x8<float>/16777216/real_time        4.11 ms         4.11 ms          164  130.497/s
+generate_table_bs_x8<double>/1048576/real_time       0.349 ms        0.349 ms         2011  192.152/s
+generate_table_bs_x8<double>/2097152/real_time       0.592 ms        0.592 ms         1205  226.561/s
+generate_table_bs_x8<double>/4194304/real_time        1.12 ms         1.12 ms          638  239.252/s
+generate_table_bs_x8<double>/8388608/real_time        2.14 ms         2.14 ms          326  250.878/s
+generate_table_bs_x8<double>/16777216/real_time       14.1 ms         13.5 ms           38  75.9258/s
+scale_table_seq_x8<float>/1048576                     7.84 ms         7.84 ms           86  8.56521/s
+scale_table_seq_x8<float>/2097152                     14.9 ms         14.9 ms           47  8.98117/s
+scale_table_seq_x8<float>/4194304                     33.0 ms         33.0 ms           21  8.13471/s
+scale_table_seq_x8<float>/8388608                     60.4 ms         60.4 ms           12   8.8939/s
+scale_table_seq_x8<float>/16777216                     121 ms          121 ms            6  8.86619/s
+scale_table_seq_x8<double>/1048576                    10.7 ms         10.7 ms           60  12.4997/s
+scale_table_seq_x8<double>/2097152                    21.3 ms         21.3 ms           33  12.5776/s
+scale_table_seq_x8<double>/4194304                    41.7 ms         41.7 ms           17  12.8894/s
+scale_table_seq_x8<double>/8388608                    83.2 ms         83.2 ms            8  12.9079/s
+scale_table_seq_x8<double>/16777216                    168 ms          168 ms            4  12.7881/s
+scale_table_par_x8<float>/1048576/real_time          0.906 ms        0.906 ms          727  74.1045/s
+scale_table_par_x8<float>/2097152/real_time           4.19 ms         4.19 ms          165  32.0631/s
+scale_table_par_x8<float>/4194304/real_time           10.6 ms         10.6 ms           71  25.2674/s
+scale_table_par_x8<float>/8388608/real_time           21.1 ms         21.1 ms           37  25.4186/s
+scale_table_par_x8<float>/16777216/real_time          39.4 ms         39.4 ms           24  27.2858/s
+scale_table_par_x8<double>/1048576/real_time          4.21 ms         4.21 ms          166  31.9062/s
+scale_table_par_x8<double>/2097152/real_time          10.6 ms         10.6 ms           74  25.2553/s
+scale_table_par_x8<double>/4194304/real_time          21.2 ms         21.2 ms           39  25.3804/s
+scale_table_par_x8<double>/8388608/real_time          38.6 ms         38.6 ms           21  27.7972/s
+scale_table_par_x8<double>/16777216/real_time         37.4 ms         36.8 ms           17  57.3848/s

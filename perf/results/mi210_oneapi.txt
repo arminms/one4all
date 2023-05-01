@@ -1,0 +1,36 @@
+2023-04-28T19:16:21-04:00
+Running build-oneapi/perf/benchmarks
+Run on (128 X 2794.72 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x64)
+  L1 Instruction 32 KiB (x64)
+  L2 Unified 512 KiB (x64)
+  L3 Unified 32768 KiB (x16)
+Load Average: 0.11, 0.13, 0.10
+oneAPI: 
+  Running on: AMD Instinct MI210
+  Clock frequency: 1700
+  Compute units: 104
+-----------------------------------------------------------------------------------------------------------
+Benchmark                                                      Time             CPU   Iterations  BW (GB/s)
+-----------------------------------------------------------------------------------------------------------
+generate_table_oneapi_x8<float>/1048576/manual_time        0.165 ms        0.240 ms         4245  203.643/s
+generate_table_oneapi_x8<float>/2097152/manual_time        0.317 ms        0.392 ms         2201   211.49/s
+generate_table_oneapi_x8<float>/4194304/manual_time        0.636 ms        0.747 ms         1089   211.01/s
+generate_table_oneapi_x8<float>/8388608/manual_time         1.25 ms         1.40 ms          556    214.3/s
+generate_table_oneapi_x8<float>/16777216/manual_time        2.46 ms         2.69 ms          284  218.661/s
+generate_table_oneapi_x8<double>/1048576/manual_time       0.522 ms        0.605 ms         1325  128.446/s
+generate_table_oneapi_x8<double>/2097152/manual_time        1.05 ms         1.16 ms          664  128.301/s
+generate_table_oneapi_x8<double>/4194304/manual_time        2.08 ms         2.25 ms          335   129.05/s
+generate_table_oneapi_x8<double>/8388608/manual_time        4.17 ms         4.41 ms          168  128.887/s
+generate_table_oneapi_x8<double>/16777216/manual_time       8.34 ms         8.81 ms           83  128.699/s
+scale_table_oneapi_x8<float>/1048576/manual_time           0.099 ms        0.163 ms         7022  678.194/s
+scale_table_oneapi_x8<float>/2097152/manual_time           0.182 ms        0.247 ms         3806  737.543/s
+scale_table_oneapi_x8<float>/4194304/manual_time           0.356 ms        0.426 ms         1975  754.997/s
+scale_table_oneapi_x8<float>/8388608/manual_time           0.700 ms        0.778 ms          981  767.001/s
+scale_table_oneapi_x8<float>/16777216/manual_time           1.39 ms         1.49 ms          497  771.736/s
+scale_table_oneapi_x8<double>/1048576/manual_time          0.155 ms        0.219 ms         4514  864.945/s
+scale_table_oneapi_x8<double>/2097152/manual_time          0.298 ms        0.369 ms         2349  900.441/s
+scale_table_oneapi_x8<double>/4194304/manual_time          0.588 ms        0.666 ms         1175  913.789/s
+scale_table_oneapi_x8<double>/8388608/manual_time           1.17 ms         1.27 ms          597  920.601/s
+scale_table_oneapi_x8<double>/16777216/manual_time          2.32 ms         2.44 ms          299  924.105/s

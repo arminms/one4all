@@ -1,0 +1,38 @@
+2023-04-28T19:11:53-04:00
+Running build-rocm/perf/benchmarks
+Run on (128 X 2794.72 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x64)
+  L1 Instruction 32 KiB (x64)
+  L2 Unified 512 KiB (x64)
+  L3 Unified 32768 KiB (x16)
+Load Average: 0.15, 0.10, 0.07
+GPU:
+  AMD Instinct MI210
+  L2 Cache: 8192 KiB
+  Number of SMs: x104
+  Peak Memory Bandwidth: 1638 (GB/s)
+
+---------------------------------------------------------------------------------------------------------
+Benchmark                                                    Time             CPU   Iterations  BW (GB/s)
+---------------------------------------------------------------------------------------------------------
+generate_table_rocm_x8<float>/1048576/manual_time        0.172 ms        0.190 ms         4127  195.207/s
+generate_table_rocm_x8<float>/2097152/manual_time        0.331 ms        0.348 ms         2115  202.673/s
+generate_table_rocm_x8<float>/4194304/manual_time        0.651 ms        0.670 ms         1064   206.06/s
+generate_table_rocm_x8<float>/8388608/manual_time         1.29 ms         1.31 ms          539  208.145/s
+generate_table_rocm_x8<float>/16777216/manual_time        2.57 ms         2.58 ms          272  209.135/s
+generate_table_rocm_x8<double>/1048576/manual_time       0.562 ms        0.582 ms         1236  119.358/s
+generate_table_rocm_x8<double>/2097152/manual_time        1.13 ms         1.15 ms          620  119.027/s
+generate_table_rocm_x8<double>/4194304/manual_time        2.26 ms         2.28 ms          309   118.56/s
+generate_table_rocm_x8<double>/8388608/manual_time        4.53 ms         4.55 ms          154  118.392/s
+generate_table_rocm_x8<double>/16777216/manual_time       9.08 ms         9.11 ms           76  118.189/s
+scale_table_rocm_x8<float>/1048576/manual_time           0.098 ms        0.112 ms         7136  687.464/s
+scale_table_rocm_x8<float>/2097152/manual_time           0.169 ms        0.184 ms         4130  792.488/s
+scale_table_rocm_x8<float>/4194304/manual_time           0.318 ms        0.333 ms         2201  845.012/s
+scale_table_rocm_x8<float>/8388608/manual_time           0.606 ms        0.624 ms         1142  885.888/s
+scale_table_rocm_x8<float>/16777216/manual_time           1.18 ms         1.20 ms          585  907.403/s
+scale_table_rocm_x8<double>/1048576/manual_time          0.133 ms        0.147 ms         5235  1012.22/s
+scale_table_rocm_x8<double>/2097152/manual_time          0.242 ms        0.255 ms         2883 1.10818k/s
+scale_table_rocm_x8<double>/4194304/manual_time          0.454 ms        0.470 ms         1541 1.18169k/s
+scale_table_rocm_x8<double>/8388608/manual_time          0.879 ms        0.900 ms          761 1.22093k/s
+scale_table_rocm_x8<double>/16777216/manual_time          1.74 ms         1.78 ms          385 1.23735k/s

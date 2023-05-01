@@ -101,7 +101,7 @@ Selecting targets for oneAPI version is like unit tests described above.
 Here are some updated benchmark results (more accurate than the preliminary results shown in the [YouTube video](https://youtu.be/RYtdiOhrv0Q) because of switching to
 [cudaEvent*()](https://github.com/arminms/one4all/commit/a16c48eed536da55c91dada8aff3841e54dba55a) /
 [hipEvent*()](https://github.com/arminms/one4all/commit/e02b76330f903ebe3225fac58e066734c5eeb203) /
-[SYCL's queue profiling](https://github.com/arminms/one4all/pull/4/commits/586bb98621806cc842816ba2bdc3399c925ce363#diff-c6cbd687df542e27db5b7eb7615b11745b46a2dbe5f16667dd1a5f9855403c3f) for measuring performance) on [the Alliance](https://alliancecan.ca)'s clusters.
+[SYCL's queue profiling](https://github.com/arminms/one4all/pull/4/commits/586bb98621806cc842816ba2bdc3399c925ce363#diff-c6cbd687df542e27db5b7eb7615b11745b46a2dbe5f16667dd1a5f9855403c3f) for measuring performance) on [the Alliance](https://alliancecan.ca)'s clusters. Output files are included in the [perf/results](./perf/results) folder.
 #### Parallel STL vs. oneAPI (higher is better)
 Using `AMD EPYC 7543 x2 2.8 GHz (64C / 128T)` CPU:
 |API – Algorithm |`float`|`double`|
