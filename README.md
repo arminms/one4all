@@ -17,14 +17,14 @@ Updated slides of the above video with more accurate benchmark results are inclu
   - [Building oneAPI version](#building-oneapi-version)
     - [Building for OpenCL targets](#building-for-opencl-targets)
     - [Building for OpenCL, NVIDIA and/or AMD GPUs](#building-for-opencl-nvidia-andor-amd-gpus)
-  - [Running unit tests](#running-unit-tests)
-  - [Running benchmarks](#running-benchmarks)
-    - [Benchmark results](#benchmark-results)
-      - [Parallel STL vs. oneAPI](#parallel-stl-vs-oneapi-higher-is-better)
-      - [CUDA vs. oneAPI](#cuda-vs-oneapi-higher-is-better)
-      - [ROCm vs. oneAPI](#rocm-vs-oneapi-higher-is-better)
-      - [NVIDIA A100 vs. AMD MI210](#nvidia-a100-sxm4-40gb-sm108-vs-amd-instinct-mi210-sm104-higher-is-better)
-  - [Using *one4all* for new projects](#using-one4all-for-new-projects)
+- [Running unit tests](#running-unit-tests)
+- [Running benchmarks](#running-benchmarks)
+  - [Benchmark results](#benchmark-results)
+    - [Parallel STL vs. oneAPI](#parallel-stl-vs-oneapi-higher-is-better)
+    - [CUDA vs. oneAPI](#cuda-vs-oneapi-higher-is-better)
+    - [ROCm vs. oneAPI](#rocm-vs-oneapi-higher-is-better)
+    - [NVIDIA A100 vs. AMD MI210](#nvidia-a100-sxm4-40gb-sm108-vs-amd-instinct-mi210-sm104-higher-is-better)
+- [Using *one4all* for new projects](#using-one4all-for-new-projects)
 ## Features
 - Support four target APIs
     - CUDA
