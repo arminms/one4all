@@ -123,6 +123,12 @@ Using `AMD Instinct MI210` GPU:
 |ROCm – `*`|1.00|1.00|
 |oneAPI – `generate_table()`|1.04|1.08|
 |oneAPI – `scale_table()`|0.91|0.79|
+#### NVIDIA A100-SXM4-40GB (SM=108) vs. AMD Instinct MI210 (SM=104) (higher is better)
+|GPU – Algorithm |`float`|`double`|
+|:---|:---:|:---:|
+|A100 – `*`|1.00|1.00|
+|MI210 – `generate_table()`|0.81|0.37|
+|MI210 – `scale_table()`|0.68|0.87|
 
 ## Using *one4all* for new projects
 Select `fork` from the top right part of this page. You may choose a different name for your repository. In that case, you can also find/replace `one4all` with `<your-project>` in all files (case-sensitive) and `ONE4ALL_TARGET_API` with `<YOUR-PROJECT>_TARGET_API` in all `CMakeLists.txt` files. Finally, rename `include/one4all` folder to `include/<your-project>`.
