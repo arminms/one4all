@@ -6,6 +6,8 @@ There is a recorded video about it on [SHARCNET YouTube Channel](https://sharcne
 
 - [CUDA, ROCm, oneAPI – All for One or One for All?](https://youtu.be/RYtdiOhrv0Q)
 
+Updated slides of the above video with more accurate benchmark results are included in the [doc](./doc) folder.
+
 ## Features
 - Support four target APIs
     - CUDA
