@@ -105,21 +105,21 @@ Here are some updated benchmark results (more accurate than the preliminary resu
 #### Parallel STL vs. oneAPI (higher is better)
 Using `AMD EPYC 7543 x2 2.8 GHz (64C / 128T)`:
 |API – Algorithm |`float`|`double`|
-|---|---|---|
+|:---|:---:|:---:|
 |Parallel STL – `*`|1.00|1.00|
 |oneAPI – `generate_table()`|0.46|0.27|
 |oneAPI – `scale_table()`|1.61|1.36|
 #### CUDA vs. oneAPI (higher is better)
 Using `NVIDIA A100-SXM4-40GB`:
 |API – Algorithm |`float`|`double`|
-|---|---|---|
+|:---|:---:|:---:|
 |CUDA – `*`|1.00|1.00|
 |oneAPI – `generate_table()`|1.00|1.02|
 |oneAPI – `scale_table()`|1.01|1.02|
 #### ROCm vs. oneAPI (higher is better)
 Using `AMD Instinct MI210`:
 |API – Algorithm |`float`|`double`|
-|---|---|---|
+|:---|:---:|:---:|
 |ROCm – `*`|1.00|1.00|
 |oneAPI – `generate_table()`|1.04|1.08|
 |oneAPI – `scale_table()`|0.91|0.79|
