@@ -97,6 +97,33 @@ cd build  # or build-cuda / build-rocm / build-oneapi
 perf/benchmarks --benchmark_counters_tabular=true
 ```
 Selecting targets for oneAPI version is like unit tests described above.
+### Benchmark results
+Here are some updated benchmark results (more accurate than the preliminary results shown in the [YouTube video](https://youtu.be/RYtdiOhrv0Q) because of switching to
+[cudaEvent*()](https://github.com/arminms/one4all/commit/a16c48eed536da55c91dada8aff3841e54dba55a) /
+[hipEvent*()](https://github.com/arminms/one4all/commit/e02b76330f903ebe3225fac58e066734c5eeb203) /
+[SYCL's queue profiling](https://github.com/arminms/one4all/pull/4/commits/586bb98621806cc842816ba2bdc3399c925ce363#diff-c6cbd687df542e27db5b7eb7615b11745b46a2dbe5f16667dd1a5f9855403c3f) for measuring performance) on [the Alliance](https://alliancecan.ca)'s clusters.
+#### Parallel STL vs. oneAPI (higher is better)
+Using `AMD EPYC 7543 x2 2.8 GHz (64C / 128T)`:
+|API – Algorithm |`float`|`double`|
+|---|---|---|
+|Parallel STL|1.00|1.00|
+|oneAPI – `generate_table()`|0.46|0.27|
+|oneAPI – `scale_table()`|1.61|1.36|
+#### CUDA vs. oneAPI (higher is better)
+Using `NVIDIA A100-SXM4-40GB`:
+|API – Algorithm |`float`|`double`|
+|---|---|---|
+|CUDA|1.00|1.00|
+|oneAPI – `generate_table()`|1.00|1.02|
+|oneAPI – `scale_table()`|1.01|1.02|
+#### ROCm vs. oneAPI (higher is better)
+Using `AMD Instinct MI210`:
+|API – Algorithm |`float`|`double`|
+|---|---|---|
+|ROCm|1.00|1.00|
+|oneAPI – `generate_table()`|1.04|1.08|
+|oneAPI – `scale_table()`|0.91|0.79|
+
 ## Using *one4all* for new projects
 Select `fork` from the top right part of this page. You may choose a different name for your repository. In that case, you can also find/replace `one4all` with `<your-project>` in all files (case-sensitive) and `ONE4ALL_TARGET_API` with `<YOUR-PROJECT>_TARGET_API` in all `CMakeLists.txt` files. Finally, rename `include/one4all` folder to `include/<your-project>`.
 
