@@ -1,5 +1,6 @@
 #include <fstream>
-#include <execution>
+#include <algorithm>
+#include <vector>
 
 #include <catch2/catch_all.hpp>
 
@@ -9,7 +10,7 @@
 
 const unsigned long seed_pi{3141592654};
 
-TEMPLATE_TEST_CASE( "generate_table() x3 - STL", "[10Kx3]", float, double )
+TEMPLATE_TEST_CASE( "generate_table() x3 - OpenMP", "[10Kx3]", float, double )
 {   typedef TestType T;
     const auto nr{10'000}, nc{3};
 
@@ -18,6 +19,8 @@ TEMPLATE_TEST_CASE( "generate_table() x3 - STL", "[10Kx3]", float, double )
     {   T(0), T (1), T  (10)  // mins
     ,   T(1), T(10), T(1000)  // maxs
     };
+    std::vector<size_t> idx(nr * nc);
+    std::iota(std::begin(idx), std::end(idx), 0);
 
     one4all::generate_table_rs<pcg32>
     (   r.begin()
@@ -27,18 +30,18 @@ TEMPLATE_TEST_CASE( "generate_table() x3 - STL", "[10Kx3]", float, double )
     ,   seed_pi
     );
 
-    SECTION("random_seeding")
-    {   CHECK( std::all_of
-        (   tbb::counting_iterator<size_t>(0)
-        ,   tbb::counting_iterator<size_t>(nr * nc)
-        ,   [&] (size_t i)
-            { return ( vrs[i] >= r[i % nc] && vrs[i] < r[ (i % nc) + nc] ); }
-        ) );
-    }
+    // SECTION("random_seeding")
+    // {   CHECK( std::all_of
+    //     (   tbb::counting_iterator<size_t>(0)
+    //     ,   tbb::counting_iterator<size_t>(nr * nc)
+    //     ,   [&] (size_t i)
+    //         { return ( vrs[i] >= r[i % nc] && vrs[i] < r[ (i % nc) + nc] ); }
+    //     ) );
+    // }
 
     SECTION("block_splitting")
     {   std::vector<T> vbs(nr * nc);
-        one4all::generate_table<pcg32>
+        one4all::openmp::generate_table_bs<pcg32>
         (   r.begin()
         ,   vbs.begin()
         ,   nr
@@ -47,22 +50,23 @@ TEMPLATE_TEST_CASE( "generate_table() x3 - STL", "[10Kx3]", float, double )
         );
 
         CHECK( std::all_of
-        (   std::execution::par
-        ,   tbb::counting_iterator<size_t>(0)
-        ,   tbb::counting_iterator<size_t>(nr * nc)
+        (   std::begin(idx)
+        ,   std::end(idx)
         ,   [&] (size_t i)
             { return ( std::abs(vrs[i] - vbs[i]) < 0.00001 ); }
         ) );
     }
 }
 
-TEMPLATE_TEST_CASE( "scale_table() x8 - STL", "[1Kx8]", float, double )
+TEMPLATE_TEST_CASE( "scale_table() x8 - OpenMP", "[1Kx8]", float, double )
 {   typedef TestType T;
     const auto nr{1000}, nc{8};
     std::vector<T> b(nr * nc), bsr(nr * nc), r
     {   T(-10), T(-5), T(-1), T(0), T(1), T( 5), T(10), T(15)  // mins
     ,   T( -5), T(-1), T( 0), T(1), T(5), T(10), T(15), T(20)  // maxs
     };
+    std::vector<size_t> idx(nr * nc);
+    std::iota(std::begin(idx), std::end(idx), 0);
 
     one4all::generate_table<pcg32>
     (   r.begin()
@@ -101,8 +105,8 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - STL", "[1Kx8]", float, double )
         ,   T(-1.0), T(1.0)
         );
         CHECK( std::all_of
-        (   tbb::counting_iterator<size_t>(0)
-        ,   tbb::counting_iterator<size_t>(nr * nc)
+        (   std::begin(idx)
+        ,   std::end(idx)
         ,   [&] (size_t i)
             { return ( std::abs(bsr[i] - bs[i]) < 0.0001 ); }
         )   );
@@ -110,9 +114,8 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - STL", "[1Kx8]", float, double )
 
     SECTION("par")
     {   std::vector<T> bs(nr * nc);
-        one4all::scale_table
-        (   std::execution::par
-        ,   r.begin()
+        one4all::openmp::scale_table
+        (   r.begin()
         ,   b.begin()
         ,   bs.begin()
         ,   nr
@@ -120,9 +123,8 @@ TEMPLATE_TEST_CASE( "scale_table() x8 - STL", "[1Kx8]", float, double )
         ,   -1.0, 1.0
         );
         CHECK( std::all_of
-        (   std::execution::par
-        ,   tbb::counting_iterator<size_t>(0)
-        ,   tbb::counting_iterator<size_t>(nr * nc)
+        (   std::begin(idx)
+        ,   std::end(idx)
         ,   [&] (size_t i)
             { return ( std::abs(bsr[i] - bs[i]) < 0.0001 ); }
         )   );

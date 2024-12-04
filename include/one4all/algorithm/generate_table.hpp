@@ -224,11 +224,9 @@ inline void generate_table
 
 #else
 
-#   include <algorithm>
-#   include <thread>
 #   include <omp.h>
 
-namespace one4all {
+namespace one4all::openmp {
 
 //----------------------------------------------------------------------------//
 // block splitting technique (OpenMP)
@@ -265,17 +263,21 @@ inline void generate_table_bs
     }
 }
 
+} // end of one4all::openmp namespace
+
 //----------------------------------------------------------------------------//
 // set block splitting as the default algorithm using a function alias
+
+namespace one4all {
 
 template
 <   typename ...ExplicitArgs
 ,   typename... Args
 >
 inline void generate_table(Args&&... args)
-{   generate_table_bs<ExplicitArgs...>(std::forward<Args>(args)...);   }
+{   openmp::generate_table_bs<ExplicitArgs...>(std::forward<Args>(args)...);   }
 
-} // end one4all namespace
+} // end of one4all namespace
 
 #endif  //__INTEL_LLVM_COMPILER && SYCL_LANGUAGE_VERSION
 

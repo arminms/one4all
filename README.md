@@ -26,9 +26,10 @@ Updated slides of the above video with more accurate benchmark results are inclu
     - [NVIDIA A100 vs. AMD MI210](#nvidia-a100-sxm4-40gb-sm108-vs-amd-instinct-mi210-sm104-higher-is-better)
 - [Using *one4all* for new projects](#using-one4all-for-new-projects)
 ## Features
-- Support four target APIs
+- Support five target APIs
     - CUDA
     - oneAPI
+    - OpenMP
     - ROCm
     - STL Parallel Algorithms
 - All the configurations are automatically done by [CMake](https://cmake.org/)
@@ -52,13 +53,22 @@ On [the Alliance](https://alliancecan.ca/) clusters, you can activate the above 
 module load cmake googlebenchmark catch2
 ```
 
-### Building C++17 parallel algorithm version
-Parallel STL requires a [TBB](https://github.com/oneapi-src/oneTBB) version between 2018 to 2020 to work.
+### Building OpenMP version
+By default, CMake script builds the OpenMP version (i.e. `-DONE4ALL_TARGET_API=openmp`):
 ```shell
 git clone https://github.com/arminms/one4all.git
 cd one4all
 cmake -S . -B build
 cmake --build build -j
+```
+
+### Building C++17 parallel algorithm version
+Parallel STL requires a [TBB](https://github.com/oneapi-src/oneTBB) version between 2018 to 2020 to work.
+```shell
+git clone https://github.com/arminms/one4all.git
+cd one4all
+cmake -S . -B build-stl -DONE4ALL_TARGET_API=stl
+cmake --build build-stl -j
 ```
 ### Building CUDA version
 Requires CUDA version 11 or higher.

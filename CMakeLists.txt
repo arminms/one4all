@@ -36,11 +36,12 @@ include(GNUInstallDirs)
 
 ## setting target API
 #
-set(ONE4ALL_TARGET_API "stl" CACHE
+set(ONE4ALL_TARGET_API "openmp" CACHE
   STRING "Choose target API ?")
 set_property(CACHE ONE4ALL_TARGET_API PROPERTY STRINGS
   "cuda"
   "oneapi"
+  "openmp"
   "rocm"
   "stl"
 )
@@ -69,6 +70,8 @@ elseif(${ONE4ALL_TARGET_API} STREQUAL oneapi)
     find_package(IntelDPCPP QUIET REQUIRED)
   endif()
   find_package(oneDPL REQUIRED)
+elseif(${ONE4ALL_TARGET_API} STREQUAL openmp)
+  find_package(OpenMP REQUIRED)
 elseif(${ONE4ALL_TARGET_API} STREQUAL rocm)
   include(CheckLanguage)
   check_language(HIP)
@@ -88,8 +91,16 @@ elseif(${ONE4ALL_TARGET_API} STREQUAL rocm)
   )
 elseif(${ONE4ALL_TARGET_API} STREQUAL stl)
   find_package(OpenMP REQUIRED)
-  list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-  find_package(TBB REQUIRED) # required for C++17 parallel algorithms
+  find_path(TBB_INCLUDE_DIR tbb/tbb.h)
+  find_library(TBB_LIBRARY tbb)
+  if(NOT TBB_INCLUDE_DIR OR NOT TBB_LIBRARY)
+    message(FATAL_ERROR "TBB not found")
+  endif()
+  add_library(TBB INTERFACE)
+  add_library(TBB::TBB ALIAS TBB)
+  target_include_directories(TBB INTERFACE ${TBB_INCLUDE_DIR})
+  target_link_libraries(TBB INTERFACE ${TBB_LIBRARY})
+  add_compile_definitions(USE_TBB=1)
 else()
   message(FATAL_ERROR "Wrong ONE4ALL_TARGET_API: ${ONE4ALL_TARGET_API}")
 endif()
@@ -141,6 +152,15 @@ target_link_libraries(oneapi INTERFACE
   oneDPL
 )
 
+## defining one4all::openmp target
+#
+add_library(openmp INTERFACE)
+add_library(${PROJECT_NAME}::openmp ALIAS openmp)
+target_link_libraries(openmp INTERFACE
+  ${PROJECT_NAME}::${PROJECT_NAME}
+  OpenMP::OpenMP_CXX
+)
+
 ## defining one4all::rocm target
 #
 add_library(rocm INTERFACE)
@@ -159,7 +179,7 @@ add_library(${PROJECT_NAME}::stl ALIAS stl)
 target_link_libraries(stl INTERFACE
   ${PROJECT_NAME}::${PROJECT_NAME}
   OpenMP::OpenMP_CXX
-  TBB::tbb
+  TBB::TBB
 )
 
 ## add unit tests

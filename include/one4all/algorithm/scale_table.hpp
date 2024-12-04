@@ -223,7 +223,7 @@ inline void scale_table
 
 //----------------------------------------------------------------------------//
 
-#else
+#elif defined(USE_TBB)
 
 #   include <algorithm>
 #   include <tbb/iterators.h>
@@ -270,6 +270,45 @@ inline void scale_table
 }
 
 } // end of one4all namespace 
+
+#else
+
+namespace one4all::openmp {
+
+//----------------------------------------------------------------------------//
+
+template
+<   typename T
+,   typename Input1T
+,   typename Input2T
+,   typename OutputT
+,   typename RSizeT
+,   typename CSizeT
+>
+inline void scale_table
+(   Input1T range
+,   Input2T in
+,   OutputT out
+,   RSizeT nr
+,   CSizeT nc
+,   T tmin
+,   T tmax
+)
+{   auto min = range;
+    auto max = range + nc;
+    #pragma omp parallel for
+    for (size_t i = 0; i < nr * nc; ++i)
+    {   CSizeT idx = i % nc;
+        *   ( out + i )
+        =   ( *(in + i) - *(min + idx) )
+        /   ( *(max + idx) - *(min + idx) )
+        *   ( tmax - tmin )
+        +   tmin
+        ;
+    }
+}
+
+} // end of one4all::openmp namespace
 
 #endif  //__INTEL_LLVM_COMPILER && SYCL_LANGUAGE_VERSION
 
