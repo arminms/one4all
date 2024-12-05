@@ -1,4 +1,3 @@
-#include <execution>
 #include <vector>
 #include <algorithm>
 
