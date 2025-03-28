@@ -1,0 +1,38 @@
+2025-03-28T17:08:05-04:00
+Running build-cuda/perf/benchmarks
+Run on (112 X 2101 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x112)
+  L1 Instruction 32 KiB (x112)
+  L2 Unified 2048 KiB (x112)
+  L3 Unified 307200 KiB (x2)
+Load Average: 2.95, 2.01, 1.42
+GPU:
+  NVIDIA H100 80GB HBM3
+  (132 X 1.98 MHz SM s)
+  L2 Cache: 51200 KiB
+  Peak Memory Bandwidth: 3352 (GB/s)
+***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
+---------------------------------------------------------------------------------------------------------
+Benchmark                                                    Time             CPU   Iterations  BW (GB/s)
+---------------------------------------------------------------------------------------------------------
+generate_table_cuda_x8<float>/1048576/manual_time        0.092 ms        0.103 ms         7553  363.813/s
+generate_table_cuda_x8<float>/2097152/manual_time        0.177 ms        0.187 ms         3962  379.904/s
+generate_table_cuda_x8<float>/4194304/manual_time        0.346 ms        0.357 ms         2024  388.032/s
+generate_table_cuda_x8<float>/8388608/manual_time        0.684 ms        0.695 ms         1022  392.171/s
+generate_table_cuda_x8<float>/16777216/manual_time        1.36 ms         1.37 ms          514  394.055/s
+generate_table_cuda_x8<double>/1048576/manual_time       0.128 ms        0.139 ms         5526  523.042/s
+generate_table_cuda_x8<double>/2097152/manual_time       0.248 ms        0.259 ms         2821  540.855/s
+generate_table_cuda_x8<double>/4194304/manual_time       0.490 ms        0.499 ms         1428  548.164/s
+generate_table_cuda_x8<double>/8388608/manual_time       0.975 ms        0.984 ms          717  550.602/s
+generate_table_cuda_x8<double>/16777216/manual_time       1.95 ms         1.96 ms          359  551.332/s
+scale_table_cuda_x8<float>/1048576/manual_time           0.039 ms        0.047 ms        17859 1.71154k/s
+scale_table_cuda_x8<float>/2097152/manual_time           0.069 ms        0.077 ms        10198  1.9567k/s
+scale_table_cuda_x8<float>/4194304/manual_time           0.128 ms        0.136 ms         5501 2.10374k/s
+scale_table_cuda_x8<float>/8388608/manual_time           0.245 ms        0.253 ms         2850 2.19271k/s
+scale_table_cuda_x8<float>/16777216/manual_time          0.480 ms        0.489 ms         1456 2.23854k/s
+scale_table_cuda_x8<double>/1048576/manual_time          0.059 ms        0.067 ms        11928 2.28454k/s
+scale_table_cuda_x8<double>/2097152/manual_time          0.108 ms        0.116 ms         6507 2.49073k/s
+scale_table_cuda_x8<double>/4194304/manual_time          0.205 ms        0.214 ms         3398 2.61309k/s
+scale_table_cuda_x8<double>/8388608/manual_time          0.402 ms        0.411 ms         1743 2.67134k/s
+scale_table_cuda_x8<double>/16777216/manual_time         0.793 ms        0.803 ms          882 2.70916k/s
